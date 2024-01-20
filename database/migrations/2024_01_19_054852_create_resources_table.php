@@ -13,7 +13,16 @@ return new class extends Migration
     {
         Schema::create('resources', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('course_id'); 
+            $table->string('title');
+            $table->json('files');
+            $table->text('description')->nullable();
+            $table->string('cover_image')->nullable();
+            $table->enum('status', ['open', 'closed'])->default('open');
             $table->timestamps();
+
+            $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
+
         });
     }
 
