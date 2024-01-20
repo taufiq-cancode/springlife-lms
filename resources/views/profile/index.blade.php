@@ -16,63 +16,69 @@
               <!-- Account -->
               <div class="card-body">
                 <div class="d-flex align-items-start align-items-sm-center gap-4">
-                  <img src="../assets/img/avatars/1.png" alt="user-avatar" class="d-block rounded" height="100" width="100" id="uploadedAvatar">
-                  <div class="button-wrapper">
+
+                  <img src="https://ui-avatars.com/api/?name={{ Illuminate\Support\Str::title(auth()->user()->firstname) }}+{{ Illuminate\Support\Str::title(auth()->user()->lastname) }}&background=a5a6ff&color=fff" alt="user-avatar" class="d-block rounded" height="100" width="100" id="uploadedAvatar">
+
+          <form id="formAccountSettings" method="POST" action="{{ route('profile.update') }}" >
+                    @csrf
+
+                  <div class="button-wrapper" style="margin-top: 20px;" >
                     <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
                       <span class="d-none d-sm-block">Upload new photo</span>
                       <i class="bx bx-upload d-block d-sm-none"></i>
-                      <input type="file" id="upload" class="account-file-input" hidden="" accept="image/png, image/jpeg">
+                      <input type="file" id="upload" class="account-file-input" name="avatar" hidden="" accept=".png, .jpg, .jpeg">
                     </label>
                     <button type="button" class="btn btn-outline-secondary account-image-reset mb-4">
                       <i class="bx bx-reset d-block d-sm-none"></i>
                       <span class="d-none d-sm-block">Reset</span>
                     </button>
-        
-                    <p class="text-muted mb-0">Allowed JPG, GIF or PNG. Max size of 800K</p>
                   </div>
                 </div>
               </div>
               <hr class="my-0">
               <div class="card-body">
-                <form id="formAccountSettings" method="POST" onsubmit="return false">
+
+                
+
                   <div class="row">
                     <div class="mb-3 col-md-6">
                       <label for="firstName" class="form-label">First Name</label>
-                      <input class="form-control" type="text" id="firstName" name="firstName" value="John" autofocus="">
+                      <input class="form-control" type="text" id="firstName" name="firstname" value="{{ Illuminate\Support\Str::title(auth()->user()->firstname) }}" required autofocus="">
                     </div>
                     <div class="mb-3 col-md-6">
                       <label for="lastName" class="form-label">Last Name</label>
-                      <input class="form-control" type="text" name="lastName" id="lastName" value="Doe">
+                      <input class="form-control" type="text" name="lastname" id="lastname" value="{{ Illuminate\Support\Str::title(auth()->user()->lastname) }}" required>
                     </div>
                     <div class="mb-3 col-md-6">
                       <label for="email" class="form-label">E-mail</label>
-                      <input class="form-control" type="text" id="email" name="email" value="john.doe@example.com" placeholder="john.doe@example.com">
+                      <input class="form-control" type="text" id="email" name="email" value="{{ (auth()->user()->email) }}" required>
                     </div>
                     <div class="mb-3 col-md-6">
                       <label class="form-label" for="phoneNumber">Phone Number</label>
                       <div class="input-group input-group-merge">
-                        <input type="text" id="phoneNumber" name="phoneNumber" class="form-control" placeholder="202 555 0111">
+                        <input type="text" id="phoneNumber" name="phone" class="form-control" value="{{ (auth()->user()->phone) }}">
                       </div>
                     </div>
 
                     <div class="mb-3 col-md-6">
-                      <label class="form-label" for="country">Gender</label>
-                      <select id="country" class="select2 form-select">
-                        <option value="">Select</option>
-                        <option value="Australia">Male</option>
-                        <option value="Bangladesh">Female</option>
+                      <label class="form-label" for="gender">Gender</label>
+                      <select id="gender" required name="gender" class="select2 form-select">
+                          <option value="">Select Gender</option>
+                          <option value="male" {{ auth()->check() && auth()->user()->gender === 'male' ? 'selected' : '' }}>Male</option>
+                          <option value="female" {{ auth()->check() && auth()->user()->gender === 'female' ? 'selected' : '' }}>Female</option>
                       </select>  
-                    </div>
+                  </div>
+                  
 
                     <div class="mb-3 col-md-6">
                       <label class="form-label" for="country">Date of Birth</label>
-                      <input type="date" id="dobBackdrop" class="form-control">
+                      <input type="date" id="dobBackdrop" name="date_of_birth" value="{{ (auth()->user()->date_of_birth) }}" class="form-control">
                     </div>
                     
-                    <div class="mb-3 col-md-6">
+                    {{-- <div class="mb-3 col-md-6">
                       <label class="form-label" for="country">Country</label>
                       <select id="country" class="select2 form-select">
-                        <option value="">Select</option>
+                        <option value="">Select Country</option>
                         <option value="Australia">Australia</option>
                         <option value="Bangladesh">Bangladesh</option>
                         <option value="Belarus">Belarus</option>
@@ -103,13 +109,13 @@
                     <div class="mb-3 col-md-6">
                       <label for="state" class="form-label">State</label>
                       <input class="form-control" type="text" id="state" name="state" placeholder="California">
-                    </div>
+                    </div> --}}
 
                   </div>
                   <div class="mt-2">
                     <button type="submit" class="btn btn-primary me-2">Save changes</button>
                   </div>
-                </form>
+          </form>
               </div>
               <!-- /Account -->
             </div>

@@ -17,12 +17,12 @@ return new class extends Migration
             $table->string('lastname');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->integer('phone')->nullable();
+            $table->string('phone')->nullable();
             $table->string('avatar')->nullable();
             $table->string('gender');
-            $table->date('date_of_birth');
-            $table->string('country');
-            $table->string('state');
+            $table->date('date_of_birth')->nullable();
+            $table->string('country')->nullable();
+            $table->string('state')->nullable();
             $table->enum('role', ['admin', 'user'])->default('user');
             $table->enum('status', ['0', '1'])->default('1');
             $table->string('password');

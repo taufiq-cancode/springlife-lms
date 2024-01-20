@@ -118,11 +118,15 @@
       </li>
 
       <li class="menu-item">
-        <a href="javascript:void(0);" class="menu-link">
+        <a href="{{ route('logout') }}" class="menu-link" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
           <i class='bx bx-user-x menu-icon'></i>
           <div data-i18n="Layouts">Logout</div>
         </a>
       </li>
+
+      <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+        @csrf
+    </form>
       
 
      
