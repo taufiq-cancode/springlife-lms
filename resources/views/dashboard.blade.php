@@ -10,23 +10,36 @@
             <div class="card">
                 <div class="d-flex align-items-end row">
                     <div class="col-sm-7">
+                        @if(auth()->check() && auth()->user()->role === 'admin')
 
-                        @if(session('first_time_registered'))
                             <div class="card-body">
-                                <h5 class="card-title text-primary">Welcome, {{ Illuminate\Support\Str::title(auth()->user()->firstname) }}!👋🏻</h5>
+                                <h5 class="card-title text-primary">Welcome, Admin {{ Illuminate\Support\Str::title(auth()->user()->firstname) }}!👋🏻</h5>
                                 <p class="mb-4">
-                                    We are glad you made it here. Get started by exploring our amazing study courses!
-                                </p>
-                                <a href="{{ route('courses.index') }}" class="btn btn-sm btn-outline-primary">View Courses</a>
+                                    You have administrative privileges. You can manage courses, resources and users.
+                                </p>    
+                                <a href="{{ route('courses.index') }}" class="btn btn-sm btn-outline-primary">Manage Courses</a>
                             </div>
+                        
                         @else
-                            <div class="card-body">
-                                <h5 class="card-title text-primary">Welcome Back, {{ Illuminate\Support\Str::title(auth()->user()->firstname) }}!👋🏻</h5>
-                                <p class="mb-4">
-                                    We love to have you back. Keep it up and get your certificates!
-                                </p>
-                                <a href="javascript:;" class="btn btn-sm btn-outline-primary">Continue Lessons</a>
-                            </div>
+
+                            @if(session('first_time_registered'))
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary">Welcome, {{ Illuminate\Support\Str::title(auth()->user()->firstname) }}!👋🏻</h5>
+                                    <p class="mb-4">
+                                        We are glad you made it here. Get started by exploring our amazing study courses!
+                                    </p>
+                                    <a href="{{ route('courses.index') }}" class="btn btn-sm btn-outline-primary">View Courses</a>
+                                </div>
+                            @else
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary">Welcome Back, {{ Illuminate\Support\Str::title(auth()->user()->firstname) }}!👋🏻</h5>
+                                    <p class="mb-4">
+                                        We love to have you back. Keep it up and get your certificates!
+                                    </p>
+                                    <a href="javascript:;" class="btn btn-sm btn-outline-primary">Continue Lessons</a>
+                                </div>
+                            @endif
+
                         @endif
 
                     </div>
@@ -53,11 +66,7 @@
                     <div class="card-body">
                     <div class="card-title d-flex align-items-start justify-content-between">
                         <div class="avatar flex-shrink-0">
-                        <img
-                            src="../assets/img/icons/unicons/chart-success.png"
-                            alt="chart success"
-                            class="rounded"
-                        />
+                            <img src="../assets/img/icons/unicons/chart-success.png" alt="chart success" class="rounded"/>
                         </div>
                     </div>
                     <span class="fw-semibold d-block mb-1">Completed Lessons</span>
@@ -70,11 +79,7 @@
                     <div class="card-body">
                     <div class="card-title d-flex align-items-start justify-content-between">
                         <div class="avatar flex-shrink-0">
-                        <img
-                            src="../assets/img/icons/unicons/wallet-info.png"
-                            alt="Credit Card"
-                            class="rounded"
-                        />
+                            <img src="../assets/img/icons/unicons/wallet-info.png" alt="Credit Card" class="rounded" />
                         </div>
                     </div>
                     <span class="fw-semibold d-block mb-1">Total Lessons</span>

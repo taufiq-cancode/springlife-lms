@@ -8,7 +8,11 @@
 
         <div class="d-flex flex-wrap justify-content-between gap-3" style="padding-top:0">
             <h4 class="py-3 mb-4"><span class="text-muted fw-light">Courses</span></h4>
-            <button type="button" class="btn btn-outline-primary mt-3 mb-4" data-bs-toggle="modal" data-bs-target="#modalCenter">Add Course</button>
+
+            @if(auth()->check() && auth()->user()->role === 'admin')
+                <button type="button" class="btn btn-outline-primary mt-3 mb-4" data-bs-toggle="modal" data-bs-target="#modalCenter">Add Course</button>
+            @endif
+
         </div>
         
         <div class="row">
@@ -16,68 +20,45 @@
                 <div class="card mb-4">
                     <div class="card-body">
                         <div class="row gy-4 mb-4">
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="card p-2 h-100 shadow-none border">
-                            <div class="rounded-2 text-center mb-3">
-                                <a href="app-academy-course-details.html"><img class="img-fluid" src="../assets/img/app-academy-tutor-1.png" alt="tutor image 1"></a>
-                            </div>
-                            <div class="card-body p-3 pt-2">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="badge bg-label-primary"><i class='bx bx-time'></i> 20 Hours</span>
-                                <span class="badge bg-label-secondary"><i class='bx bxs-videos'></i> 20 Lessons</span>
-                                </div>
-                                <a href="app-academy-course-details.html" class="h5">Basics of Angular</a>
-                                <p class="mt-2">Introductory course for Angular and framework basics in web development.</p>
-                                <p class="d-flex align-items-center"><i class="bx bx-time-five me-2"></i>30% Completed</p>
-                                <div class="progress mb-4" style="height: 8px">
-                                <div class="progress-bar w-75" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <a href="{{ route('lessons.index') }}" style="width: 100%;" class="btn btn-outline-primary">Continue Lessons <i class='bx bx-chevron-right'></i></a>
-                            </div>
-                            </div>
-                        </div>
 
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="card p-2 h-100 shadow-none border">
-                            <div class="rounded-2 text-center mb-3">
-                                <a href="app-academy-course-details.html"><img class="img-fluid" src="../assets/img/app-academy-tutor-1.png" alt="tutor image 1"></a>
-                            </div>
-                            <div class="card-body p-3 pt-2">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="badge bg-label-primary"><i class='bx bx-time'></i> 20 Hours</span>
-                                <span class="badge bg-label-secondary"><i class='bx bxs-videos'></i> 20 Lessons</span>
-                                </div>
-                                <a href="app-academy-course-details.html" class="h5">Basics of Angular</a>
-                                <p class="mt-2">Introductory course for Angular and framework basics in web development.</p>
-                                <p class="d-flex align-items-center"><i class="bx bx-time-five me-2"></i>30% Completed</p>
-                                <div class="progress mb-4" style="height: 8px">
-                                <div class="progress-bar w-75" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <a href="" style="width: 100%;" class="btn btn-outline-primary">Continue Lessons <i class='bx bx-chevron-right'></i></a>
-                            </div>
-                            </div>
-                        </div>
+                            @foreach ($courses as $course)
+                            
+                                <div class="col-sm-6 col-lg-4">
+                                    <div class="card p-2 h-100 shadow-none border">
 
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="card p-2 h-100 shadow-none border">
-                            <div class="rounded-2 text-center mb-3">
-                                <a href="app-academy-course-details.html"><img class="img-fluid" src="../assets/img/app-academy-tutor-1.png" alt="tutor image 1"></a>
-                            </div>
-                            <div class="card-body p-3 pt-2">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="badge bg-label-primary"><i class='bx bx-time'></i> 20 Hours</span>
-                                <span class="badge bg-label-secondary"><i class='bx bxs-videos'></i> 20 Lessons</span>
+                                        <div class="rounded-2 text-center mb-3">
+                                            <a href="{{ route('courses.view', ['courseId' => $course->id]) }}"><img class="img-fluid" src="storage/{{ $course->cover_image ?? '../assets/img/online-learning.png' }}" alt="{{ $course->title }}"></a>
+                                        </div>
+                                        
+                                        <div class="card-body p-3 pt-2">
+
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <span class="badge bg-label-primary"><i class='bx bx-time'></i> 20 Hours</span>
+                                                <span class="badge bg-label-secondary"><i class='bx bxs-videos'></i> 20 Lessons</span>
+                                            </div>
+                                            
+                                            <a href="{{ route('courses.view', ['courseId' => $course->id]) }}" class="h5">{{ $course->title }}</a>
+                                            <p class="mt-2">{{ $course->description }}</p>
+                                            
+                                            @if(auth()->check() && auth()->user()->role === 'user')
+                                                <p class="d-flex align-items-center"><i class="bx bx-time-five me-2"></i>30% Completed</p>
+                                                <div class="progress mb-4" style="height: 8px">
+                                                    <div class="progress-bar w-75" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                                <a href="{{ route('courses.view', ['courseId' => $course->id]) }}" style="width: 100%;" class="btn btn-outline-primary">Continue Lessons <i class='bx bx-chevron-right'></i></a>
+                                            @endif
+
+                                            @if(auth()->check() && auth()->user()->role === 'admin')
+                                                <a href="{{ route('courses.view', ['courseId' => $course->id]) }}" style="width: 100%;" class="btn btn-outline-primary">View Course<i class='bx bx-chevron-right'></i></a>
+                                            @endif
+
+                                        </div>
+
+                                    </div>
                                 </div>
-                                <a href="app-academy-course-details.html" class="h5">Basics of Angular</a>
-                                <p class="mt-2">Introductory course for Angular and framework basics in web development.</p>
-                                <p class="d-flex align-items-center"><i class="bx bx-time-five me-2"></i>30% Completed</p>
-                                <div class="progress mb-4" style="height: 8px">
-                                <div class="progress-bar w-75" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <a href="" style="width: 100%;" class="btn btn-outline-primary">Continue Lessons <i class='bx bx-chevron-right'></i></a>
-                            </div>
-                            </div>
-                        </div>
+                            
+                            @endforeach
+
                         </div>
 
                     </div>
@@ -101,54 +82,60 @@
         </div>
     </footer>
     <!-- / Footer -->
+    
+    @if(auth()->check() && auth()->user()->role === 'admin')
+        <div class="modal fade" id="modalCenter" tabindex="-1" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="modalCenterTitle">Add a Course</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
 
-    <div class="modal fade" id="modalCenter" tabindex="-1" style="display: none;" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="modalCenterTitle">Add a Course</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <form method="POST" action="{{ route('courses.store') }}" enctype="multipart/form-data">
+                    @csrf
+
+                    <div class="row">
+                        <div class="col mb-3">
+                            <label for="nameWithTitle" class="form-label">Course Title</label>
+                            <input type="text" id="nameWithTitle" name="title" class="form-control" required placeholder="Enter Course Title">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col mb-3">
+                            <label for="nameWithTitle" class="form-label">Course Description</label>
+                            <textarea class="form-control" id="exampleFormControlTextarea1" name="description" required rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col mb-3">
+                            <label for="nameWithTitle" class="form-label">Course Resource Files</label>
+                            <input class="form-control" type="file" id="formFileMultiple" name="files[]" required multiple="" accept=".pdf">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col mb-3">
+                            <label for="nameWithTitle" class="form-label">Cover Image</label>
+                            <input class="form-control" type="file" name="cover_image" id="formFileMultiple" accept=".png, .jpg, .jpeg">
+                        </div>
+                    </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
             </div>
-            <div class="modal-body">
-
-                <div class="row">
-                    <div class="col mb-3">
-                        <label for="nameWithTitle" class="form-label">Course Title</label>
-                        <input type="text" id="nameWithTitle" name="title" class="form-control" placeholder="Enter Course Title">
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col mb-3">
-                        <label for="nameWithTitle" class="form-label">Course Description</label>
-                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col mb-3">
-                        <label for="nameWithTitle" class="form-label">Course Resource Files</label>
-                        <input class="form-control" type="file" id="formFileMultiple" multiple="">
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col mb-3">
-                        <label for="nameWithTitle" class="form-label">Cover Image</label>
-                        <input class="form-control" type="file" id="formFileMultiple" >
-                    </div>
-                </div>
-
-              
-              
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
-          </div>
         </div>
-    </div>
+    @endif
+
+    
 
     <div class="content-backdrop fade"></div>
     </div>

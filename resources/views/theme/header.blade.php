@@ -30,16 +30,15 @@
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
             <li>
-              <a class="dropdown-item" href="#">
+              <a class="dropdown-item" href="{{ route('profile.index') }}">
                 <div class="d-flex">
                   <div class="flex-shrink-0 me-3">
                     <div class="avatar avatar-online">
-                      <img src="../assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle" />
+                      <img src="https://ui-avatars.com/api/?name={{ Illuminate\Support\Str::title(auth()->user()->firstname) }}+{{ Illuminate\Support\Str::title(auth()->user()->lastname) }}&background=a5a6ff&color=fff" alt class="w-px-40 h-auto rounded-circle" />
                     </div>
                   </div>
-                  <div class="flex-grow-1">
-                    <span class="fw-semibold d-block">John Doe</span>
-                    <small class="text-muted">Admin</small>
+                  <div class="flex-grow-1" style="margin-top: 10px;">
+                    <span class="fw-semibold d-block">{{ Illuminate\Support\Str::title(auth()->user()->firstname) }} {{ Illuminate\Support\Str::title(auth()->user()->lastname) }}</span>
                   </div>
                 </div>
               </a>
@@ -48,7 +47,7 @@
               <div class="dropdown-divider"></div>
             </li>
             <li>
-              <a class="dropdown-item" href="#">
+              <a class="dropdown-item" href="{{ route('profile.index') }}">
                 <i class="bx bx-user me-2"></i>
                 <span class="align-middle">My Profile</span>
               </a>
@@ -57,10 +56,13 @@
               <div class="dropdown-divider"></div>
             </li>
             <li>
-              <a class="dropdown-item" href="auth-login-basic.html">
+              <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
                 <i class="bx bx-power-off me-2"></i>
                 <span class="align-middle">Log Out</span>
               </a>
+              <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+              </form>
             </li>
           </ul>
         </li>

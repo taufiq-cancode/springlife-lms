@@ -8,7 +8,11 @@
 
         <div class="d-flex flex-wrap justify-content-between gap-3" style="padding-top:0">
             <h4 class="py-3 mb-4"><span class="text-muted fw-light">Resources</span>  </h4>
-            <button type="button" class="btn btn-outline-primary mt-3 mb-4" data-bs-toggle="modal" data-bs-target="#modalCenter">Add Resource</button>
+
+            @if(auth()->check() && auth()->user()->role === 'admin')
+                <button type="button" class="btn btn-outline-primary mt-3 mb-4" data-bs-toggle="modal" data-bs-target="#modalCenter">Add Resource</button>
+            @endif
+
         </div>
 
         <div class="row">
@@ -54,7 +58,8 @@
         </div>
     </footer>
     <!-- / Footer -->
-
+    
+@if(auth()->check() && auth()->user()->role === 'admin')
     <div class="modal fade" id="modalCenter" tabindex="-1" style="display: none;" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
@@ -107,6 +112,7 @@
           </div>
         </div>
     </div>
+@endif
 
     
       <div class="content-backdrop fade"></div>

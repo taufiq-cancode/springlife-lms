@@ -5,153 +5,133 @@
     <!-- Content -->
 
     <div class="container-xxl flex-grow-1 container-p-y">
+      <div class="d-flex flex-wrap justify-content-between gap-3" style="padding-top:0">
+        <h4 class="py-3 mb-4"><span class="text-muted fw-light">Courses /</span> {{ $course->title }} </h4>
+
+        @if(auth()->check() && auth()->user()->role === 'admin')
+          <button type="button" class="btn btn-outline-primary mt-3 mb-4" data-bs-toggle="modal" data-bs-target="#modalCenter">Add Lesson</button>
+        @endif
+
+      </div>
+      
         <div class="row">
-            <div class="col-lg-8 mb-4 order-0">
-            <div class="card">
-                <div class="d-flex align-items-end row">
-                <div class="col-sm-7">
-                    <div class="card-body">
-                    <h5 class="card-title text-primary">Welcome Back, John!👋🏻</h5>
-                    <p class="mb-4">
-                        Your progress this week is Awesome. Keep it up and get your certificates!
-                    </p>
-                    <a href="javascript:;" class="btn btn-sm btn-outline-primary">Continue Lessons</a>
-                    </div>
-                </div>
-                <div class="col-sm-5 text-center text-sm-left">
-                    <div class="card-body pb-0 px-0 px-md-4">
-                    <img
-                        src="../assets/img/illustrations/man-with-laptop-light.png"
-                        height="140"
-                        alt="View Badge User"
-                        data-app-dark-img="illustrations/man-with-laptop-dark.png"
-                        data-app-light-img="illustrations/man-with-laptop-light.png"
-                    />
-                    </div>
-                </div>
-                </div>
-            </div>
-            </div>
-            <div class="col-lg-4 col-md-4 order-1">
-            <div class="row">
-                <div class="col-lg-6 col-md-12 col-6 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                    <div class="card-title d-flex align-items-start justify-content-between">
-                        <div class="avatar flex-shrink-0">
-                        <img
-                            src="../assets/img/icons/unicons/chart-success.png"
-                            alt="chart success"
-                            class="rounded"
-                        />
-                        </div>
-                    </div>
-                    <span class="fw-semibold d-block mb-1">Completed Lessons</span>
-                    <h5 class="card-title mb-2">10</h5>
-                    </div>
-                </div>
-                </div>
-                <div class="col-lg-6 col-md-12 col-6 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                    <div class="card-title d-flex align-items-start justify-content-between">
-                        <div class="avatar flex-shrink-0">
-                        <img
-                            src="../assets/img/icons/unicons/wallet-info.png"
-                            alt="Credit Card"
-                            class="rounded"
-                        />
-                        </div>
-                    </div>
-                    <span class="fw-semibold d-block mb-1">Total Lessons</span>
-                    <h5 class="card-title text-nowrap mb-1">19</h5>
-                    </div>
-                </div>
-                </div>
-            </div>
-            </div>
-        </div>
+            <div class="col-lg-12">
+                <div class="card mb-4">
+                   
+                    <div class="card-body row g-3">
+                        <div class="col-lg-8">
+                          <div class="d-flex justify-content-between align-items-center flex-wrap mb-2 gap-1">
+                            <div class="me-1">
+                              <h4 class="mb-1">UI/UX Basic Fundamentals</h4>
+                            </div>
+                          </div>
+                          <div class="card academy-content shadow-none border">
+                            <div class="p-2">
+                                <div class="ratio ratio-16x9">
+                                    <iframe width="560" height="315" src="https://www.youtube.com/embed/R4a829TG2qM?si=M3rt56lIMV4z1e1X" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                                  </div>
+                            </div>
+                            <div class="card-body">
 
-        <div class="row">
-        <div class="col-lg-12">
-            <div class="card mb-4">
-            
-            <div class="card-header d-flex flex-wrap justify-content-between gap-3">
-                <div class="card-title mb-0 me-1">
-                    <h5 class="mb-1">Courses</h5>
+                                <h5 class="mb-2">About this course</h5>
+                                <p class="mb-0 pt-1">{{ $course->description }}</p>
+                                <hr class="my-4">
+
+                                <h5>Resources</h5>
+
+                                <div class="list-group list-group-flush">
+                                    @forelse ($resources as $resource)
+                                        <a href="{{ route('resources.download', ['resourceId' => $resource->id]) }}" class="list-group-item list-group-item-action">
+                                            <i class='bx bxs-file-pdf'></i> {{ $resource->title }}
+                                            <i class='bx bx-download' style="float:right; color:cornflowerblue"></i>
+                                        </a>
+                                    @empty
+                                        <p>No resources available for this course.</p>
+                                    @endforelse
+                                </div>
+                                            
+                              </div>
+                          </div>
+                        </div>
+                        <div class="col-lg-4">
+                          <div class="accordion stick-top accordion-bordered course-content-fixed" id="courseContent">
+                            <div class="accordion-item shadow-none border mb-0">
+                              <div class="accordion-header" id="headingOne">
+                                <button type="button" class="accordion-button bg-lighter rounded-0" data-bs-target="#chapterOne" aria-expanded="false" aria-controls="chapterOne">
+                                  <span class="d-flex flex-column">
+                                    <span class="h5 mb-1">Lessons</span>
+                                    <span class="fw-normal">2 / 5 completed</span>
+                                  </span>
+                                </button>
+                              </div>
+                              <div id="chapterOne" class="accordion-collapse" data-bs-parent="#courseContent" style="">
+                                <div class="accordion-body py-3 border-top">
+                                  <div class="form-check d-flex align-items-center mb-3">
+                                    <input class="form-check-input" type="checkbox" id="defaultCheck1" checked="">
+                                    <label for="defaultCheck1" class="form-check-label ms-3">
+                                      <span class="mb-0 h6">1. Welcome to this course</span>
+                                      <span class="text-muted d-block">2.4 min</span>
+                                    </label>
+                                  </div>
+                                  <div class="form-check d-flex align-items-center mb-3">
+                                    <input class="form-check-input" type="checkbox" id="defaultCheck2" checked="">
+                                    <label for="defaultCheck2" class="form-check-label ms-3">
+                                      <span class="mb-0 h6">2. Watch before you start</span>
+                                      <span class="text-muted d-block">4.8 min</span>
+                                    </label>
+                                  </div>
+                                  <div class="form-check d-flex align-items-center mb-3">
+                                    <input class="form-check-input" type="checkbox" id="defaultCheck3">
+                                    <label for="defaultCheck3" class="form-check-label ms-3">
+                                      <span class="mb-0 h6">3. Basic design theory</span>
+                                      <span class="text-muted d-block">5.9 min</span>
+                                    </label>
+                                  </div>
+                                  <div class="form-check d-flex align-items-center mb-3">
+                                    <input class="form-check-input" type="checkbox" id="defaultCheck4">
+                                    <label for="defaultCheck4" class="form-check-label ms-3">
+                                      <span class="mb-0 h6">4. Basic fundamentals</span>
+                                      <span class="text-muted d-block">3.6 min</span>
+                                    </label>
+                                  </div>
+                                  <div class="form-check d-flex align-items-center mb-3">
+                                    <input class="form-check-input" type="checkbox" id="defaultCheck4">
+                                    <label for="defaultCheck4" class="form-check-label ms-3">
+                                      <span class="mb-0 h6">5. Basic fundamentals</span>
+                                      <span class="text-muted d-block">3.6 min</span>
+                                    </label>
+                                  </div>
+                                  <div class="form-check d-flex align-items-center mb-3">
+                                    <input class="form-check-input" type="checkbox" id="defaultCheck4">
+                                    <label for="defaultCheck4" class="form-check-label ms-3">
+                                      <span class="mb-0 h6">6. Basic fundamentals</span>
+                                      <span class="text-muted d-block">3.6 min</span>
+                                    </label>
+                                  </div>
+                                  <div class="form-check d-flex align-items-center mb-3">
+                                    <input class="form-check-input" type="checkbox" id="defaultCheck4">
+                                    <label for="defaultCheck4" class="form-check-label ms-3">
+                                      <span class="mb-0 h6">7. Basic fundamentals</span>
+                                      <span class="text-muted d-block">3.6 min</span>
+                                    </label>
+                                  </div>
+                                  <div class="form-check d-flex align-items-center">
+                                    <input class="form-check-input" type="checkbox" id="defaultCheck5">
+                                    <label for="defaultCheck5" class="form-check-label ms-3">
+                                      <span class="mb-0 h6">8. What is ui/ux</span>
+                                      <span class="text-muted d-block">10.6 min</span>
+                                    </label>
+                                  </div>
+                                  
+                                </div>
+                              </div>
+                            </div>
+                          
+                          </div>
+                        </div>
+                      </div>
                 </div>
             </div>
-
-            <div class="card-body">
-                <div class="row gy-4 mb-4">
-                <div class="col-sm-6 col-lg-4">
-                    <div class="card p-2 h-100 shadow-none border">
-                    <div class="rounded-2 text-center mb-3">
-                        <a href="app-academy-course-details.html"><img class="img-fluid" src="../assets/img/app-academy-tutor-1.png" alt="tutor image 1"></a>
-                    </div>
-                    <div class="card-body p-3 pt-2">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="badge bg-label-primary"><i class='bx bx-time'></i> 20 Hours</span>
-                        <span class="badge bg-label-secondary"><i class='bx bxs-videos'></i> 20 Lessons</span>
-                        </div>
-                        <a href="app-academy-course-details.html" class="h5">Basics of Angular</a>
-                        <p class="mt-2">Introductory course for Angular and framework basics in web development.</p>
-                        <p class="d-flex align-items-center"><i class="bx bx-time-five me-2"></i>30% Completed</p>
-                        <div class="progress mb-4" style="height: 8px">
-                        <div class="progress-bar w-75" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                        <a href="" style="width: 100%;" class="btn btn-outline-primary">Continue Lessons <i class='bx bx-chevron-right'></i></a>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-lg-4">
-                    <div class="card p-2 h-100 shadow-none border">
-                    <div class="rounded-2 text-center mb-3">
-                        <a href="app-academy-course-details.html"><img class="img-fluid" src="../assets/img/app-academy-tutor-1.png" alt="tutor image 1"></a>
-                    </div>
-                    <div class="card-body p-3 pt-2">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="badge bg-label-primary"><i class='bx bx-time'></i> 20 Hours</span>
-                        <span class="badge bg-label-secondary"><i class='bx bxs-videos'></i> 20 Lessons</span>
-                        </div>
-                        <a href="app-academy-course-details.html" class="h5">Basics of Angular</a>
-                        <p class="mt-2">Introductory course for Angular and framework basics in web development.</p>
-                        <p class="d-flex align-items-center"><i class="bx bx-time-five me-2"></i>30% Completed</p>
-                        <div class="progress mb-4" style="height: 8px">
-                        <div class="progress-bar w-75" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                        <a href="" style="width: 100%;" class="btn btn-outline-primary">Continue Lessons <i class='bx bx-chevron-right'></i></a>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 col-lg-4">
-                    <div class="card p-2 h-100 shadow-none border">
-                    <div class="rounded-2 text-center mb-3">
-                        <a href="app-academy-course-details.html"><img class="img-fluid" src="../assets/img/app-academy-tutor-1.png" alt="tutor image 1"></a>
-                    </div>
-                    <div class="card-body p-3 pt-2">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="badge bg-label-primary"><i class='bx bx-time'></i> 20 Hours</span>
-                        <span class="badge bg-label-secondary"><i class='bx bxs-videos'></i> 20 Lessons</span>
-                        </div>
-                        <a href="app-academy-course-details.html" class="h5">Basics of Angular</a>
-                        <p class="mt-2">Introductory course for Angular and framework basics in web development.</p>
-                        <p class="d-flex align-items-center"><i class="bx bx-time-five me-2"></i>30% Completed</p>
-                        <div class="progress mb-4" style="height: 8px">
-                        <div class="progress-bar w-75" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                        <a href="" style="width: 100%;" class="btn btn-outline-primary">Continue Lessons <i class='bx bx-chevron-right'></i></a>
-                    </div>
-                    </div>
-                </div>
-                </div>
-
-            </div>
-            </div>
-        </div>
-
         </div>
     </div>
     <!-- / Content -->
@@ -170,6 +150,66 @@
         </div>
     </footer>
     <!-- / Footer -->
+
+    
+    @if(auth()->check() && auth()->user()->role === 'admin')
+      <div class="modal fade" id="modalCenter" tabindex="-1" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalCenterTitle">Add a Lesson</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                  <div class="row">
+                    <div class="col mb-3">
+                        <label for="nameWithTitle" class="form-label">Course</label>
+                        <select id="defaultSelect" class="form-select">
+                            <option>Select Course</option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col mb-3">
+                        <label for="nameWithTitle" class="form-label">Lesson Title</label>
+                        <input type="text" id="nameWithTitle" name="title" class="form-control" placeholder="Enter Course Title">
+                    </div>
+                </div>
+
+                <div class="row">
+                  <div class="col mb-3">
+                      <label for="nameWithTitle" class="form-label">Lesson Link</label>
+                      <input type="text" id="nameWithTitle" name="title" class="form-control" placeholder="Enter Lesson Youtube Link">
+                  </div>
+                </div>
+
+                <div class="row">
+                    <div class="col mb-3">
+                        <label for="nameWithTitle" class="form-label">Lesson Description</label>
+                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col mb-3">
+                        <label for="nameWithTitle" class="form-label">Cover Image</label>
+                        <input class="form-control" type="file" id="formFileMultiple" >
+                    </div>
+                  </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    @endif  
 
     <div class="content-backdrop fade"></div>
     </div>
