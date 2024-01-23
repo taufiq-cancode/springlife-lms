@@ -17,7 +17,8 @@ class ResourceController extends Controller
     public function index(){
         try{
 
-            return view('resources.index');
+            $resources = Resource::all();
+            return view('resources.index', compact('resources'));
 
         }catch (\Exception $e){
 

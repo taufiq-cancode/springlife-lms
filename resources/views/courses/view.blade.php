@@ -1,6 +1,13 @@
 @extends('theme.theme-master')
 @section('content')
 
+<style>
+    .form-check-input {
+        min-width: 1.2em;
+    }
+</style>
+
+
     <div class="content-wrapper">
     <!-- Content -->
 
@@ -9,7 +16,10 @@
         <h4 class="py-3 mb-4"><span class="text-muted fw-light">Courses /</span> {{ $course->title }} </h4>
 
         @if(auth()->check() && auth()->user()->role === 'admin')
-          <button type="button" class="btn btn-outline-primary mt-3 mb-4" data-bs-toggle="modal" data-bs-target="#modalCenter">Add Lesson</button>
+        <div>
+            <button type="button" class="btn btn-outline-primary mt-3 mb-4" data-bs-toggle="modal" data-bs-target="#modalEdit">Edit Course</button>
+            <button type="button" class="btn btn-outline-primary mt-3 mb-4" data-bs-toggle="modal" data-bs-target="#modalCenter">Add Lesson</button>
+        </div>
         @endif
 
       </div>
@@ -22,7 +32,7 @@
                         <div class="col-lg-8">
                           <div class="d-flex justify-content-between align-items-center flex-wrap mb-2 gap-1">
                             <div class="me-1">
-                              <h4 class="mb-1">UI/UX Basic Fundamentals</h4>
+                              <h4 class="mb-1">Lesson Title</h4>
                             </div>
                           </div>
                           <div class="card academy-content shadow-none border">
@@ -65,64 +75,23 @@
                                 </button>
                               </div>
                               <div id="chapterOne" class="accordion-collapse" data-bs-parent="#courseContent" style="">
+                                
                                 <div class="accordion-body py-3 border-top">
-                                  <div class="form-check d-flex align-items-center mb-3">
-                                    <input class="form-check-input" type="checkbox" id="defaultCheck1" checked="">
-                                    <label for="defaultCheck1" class="form-check-label ms-3">
-                                      <span class="mb-0 h6">1. Welcome to this course</span>
-                                      <span class="text-muted d-block">2.4 min</span>
-                                    </label>
-                                  </div>
-                                  <div class="form-check d-flex align-items-center mb-3">
-                                    <input class="form-check-input" type="checkbox" id="defaultCheck2" checked="">
-                                    <label for="defaultCheck2" class="form-check-label ms-3">
-                                      <span class="mb-0 h6">2. Watch before you start</span>
-                                      <span class="text-muted d-block">4.8 min</span>
-                                    </label>
-                                  </div>
-                                  <div class="form-check d-flex align-items-center mb-3">
-                                    <input class="form-check-input" type="checkbox" id="defaultCheck3">
-                                    <label for="defaultCheck3" class="form-check-label ms-3">
-                                      <span class="mb-0 h6">3. Basic design theory</span>
-                                      <span class="text-muted d-block">5.9 min</span>
-                                    </label>
-                                  </div>
-                                  <div class="form-check d-flex align-items-center mb-3">
-                                    <input class="form-check-input" type="checkbox" id="defaultCheck4">
-                                    <label for="defaultCheck4" class="form-check-label ms-3">
-                                      <span class="mb-0 h6">4. Basic fundamentals</span>
-                                      <span class="text-muted d-block">3.6 min</span>
-                                    </label>
-                                  </div>
-                                  <div class="form-check d-flex align-items-center mb-3">
-                                    <input class="form-check-input" type="checkbox" id="defaultCheck4">
-                                    <label for="defaultCheck4" class="form-check-label ms-3">
-                                      <span class="mb-0 h6">5. Basic fundamentals</span>
-                                      <span class="text-muted d-block">3.6 min</span>
-                                    </label>
-                                  </div>
-                                  <div class="form-check d-flex align-items-center mb-3">
-                                    <input class="form-check-input" type="checkbox" id="defaultCheck4">
-                                    <label for="defaultCheck4" class="form-check-label ms-3">
-                                      <span class="mb-0 h6">6. Basic fundamentals</span>
-                                      <span class="text-muted d-block">3.6 min</span>
-                                    </label>
-                                  </div>
-                                  <div class="form-check d-flex align-items-center mb-3">
-                                    <input class="form-check-input" type="checkbox" id="defaultCheck4">
-                                    <label for="defaultCheck4" class="form-check-label ms-3">
-                                      <span class="mb-0 h6">7. Basic fundamentals</span>
-                                      <span class="text-muted d-block">3.6 min</span>
-                                    </label>
-                                  </div>
-                                  <div class="form-check d-flex align-items-center">
-                                    <input class="form-check-input" type="checkbox" id="defaultCheck5">
-                                    <label for="defaultCheck5" class="form-check-label ms-3">
-                                      <span class="mb-0 h6">8. What is ui/ux</span>
-                                      <span class="text-muted d-block">10.6 min</span>
-                                    </label>
-                                  </div>
                                   
+                                    @foreach ($lessons as $lesson)
+
+                                        <div class="form-check d-flex align-items-center mb-3">
+                                            <input class="form-check-input" type="checkbox" id="lesson_{{ $lesson->id }}" checked="">
+                                            
+                                            <label for="lesson_{{ $lesson->id }}" class="form-check-label ms-3">
+                                                <span class="mb-0 h6">{{ $loop->iteration }}. {{ $lesson->title }}</span>
+                                                <span class="text-muted d-block"> min</span>
+                                            </label>
+                                        </div>
+
+                                    @endforeach
+
+                                                         
                                 </div>
                               </div>
                             </div>
@@ -153,62 +122,97 @@
 
     
     @if(auth()->check() && auth()->user()->role === 'admin')
-      <div class="modal fade" id="modalCenter" tabindex="-1" style="display: none;" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="modalCenterTitle">Add a Lesson</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+        <div class="modal fade" id="modalCenter" tabindex="-1" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalCenterTitle">Add a Lesson</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" action="{{ route('lessons.store', ['courseId' => $course->id]) }}">
+                            @csrf
+        
+                            <div class="row">
+                                <div class="col mb-3">
+                                    <label for="title" class="form-label">Lesson Title</label>
+                                    <input type="text" name="title" class="form-control" placeholder="Enter Lesson Title" required>
+                                </div>
+                            </div>
+        
+                            <div class="row">
+                                <div class="col mb-3">
+                                    <label for="lesson_link" class="form-label">Lesson Link</label>
+                                    <input type="text" name="link" class="form-control" placeholder="Enter Lesson Youtube Link" required>
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="course_id" value="{{ $course->id }}">
+        
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Upload lesson</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <div class="modal-body">
-
-                  <div class="row">
-                    <div class="col mb-3">
-                        <label for="nameWithTitle" class="form-label">Course</label>
-                        <select id="defaultSelect" class="form-select">
-                            <option>Select Course</option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col mb-3">
-                        <label for="nameWithTitle" class="form-label">Lesson Title</label>
-                        <input type="text" id="nameWithTitle" name="title" class="form-control" placeholder="Enter Course Title">
-                    </div>
-                </div>
-
-                <div class="row">
-                  <div class="col mb-3">
-                      <label for="nameWithTitle" class="form-label">Lesson Link</label>
-                      <input type="text" id="nameWithTitle" name="title" class="form-control" placeholder="Enter Lesson Youtube Link">
-                  </div>
-                </div>
-
-                <div class="row">
-                    <div class="col mb-3">
-                        <label for="nameWithTitle" class="form-label">Lesson Description</label>
-                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col mb-3">
-                        <label for="nameWithTitle" class="form-label">Cover Image</label>
-                        <input class="form-control" type="file" id="formFileMultiple" >
-                    </div>
-                  </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
-          </div>
         </div>
-      </div>
+
+        <div class="modal fade" id="modalEdit" tabindex="-1" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="modalCenterTitle">Edit Course</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body">
+
+                    <form method="POST" action="{{ route('courses.update', ['courseId' => $course]) }}" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+    
+                        <div class="row">
+                            <div class="col mb-3">
+                                <label for="nameWithTitle" class="form-label">Course Title</label>
+                                <input type="text" id="nameWithTitle" name="title" value="{{ $course->title }}" class="form-control" placeholder="Enter Course Title">
+                            </div>
+                        </div>
+    
+                        <div class="row">
+                            <div class="col mb-3">
+                                <label for="nameWithTitle" class="form-label">Course Description</label>
+                                <textarea class="form-control" id="exampleFormControlTextarea1" name="description" rows="3">{{ $course->description }}</textarea>
+                            </div>
+                        </div>
+    
+                        <div class="row">
+                            <div class="col mb-3">
+                                <label for="nameWithTitle" class="form-label">Course Resource Files</label>
+                                <input class="form-control" type="file" id="formFileMultiple" name="files[]" multiple="" accept=".pdf">
+                            </div>
+                        </div>
+    
+                        <div class="row">
+                            <div class="col mb-3">
+                                <label for="nameWithTitle" class="form-label">Cover Image</label>
+                                <input class="form-control" type="file" name="cover_image" id="formFileMultiple" accept=".png, .jpg, .jpeg">
+                            </div>
+                        </div>
+    
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Update course</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
     @endif  
 
     <div class="content-backdrop fade"></div>

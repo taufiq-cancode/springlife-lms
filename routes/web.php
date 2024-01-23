@@ -39,8 +39,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/store', [CourseController::class, 'store']) ->name('courses.store');
         Route::get('/view/{courseId}', [CourseController::class, 'view']) ->name('courses.view');
         Route::get('/edit/{courseId}', [CourseController::class, 'edit']) ->name('courses.edit');
-        Route::post('/update/{courseId}', [CourseController::class, 'update']) ->name('courses.update');
-        Route::get('/delete/{courseId}', [CourseController::class, 'delete']) ->name('courses.delete');
+        Route::put('/update/{courseId}', [CourseController::class, 'update']) ->name('courses.update');
+        Route::delete('/delete/{courseId}', [CourseController::class, 'delete']) ->name('courses.delete');
     });
 
     Route::prefix('lessons')->group(function(){

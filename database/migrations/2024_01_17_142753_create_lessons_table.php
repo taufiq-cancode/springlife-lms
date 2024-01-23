@@ -16,8 +16,6 @@ return new class extends Migration
             $table->unsignedBigInteger('course_id'); 
             $table->string('title');
             $table->string('link');
-            $table->text('description')->nullable();
-            $table->string('cover_image')->nullable();
             $table->enum('status', ['open', 'closed'])->default('open');
             $table->timestamps();
 

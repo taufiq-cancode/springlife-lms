@@ -78,9 +78,9 @@ class CourseController extends Controller
 
             $course = Course::findOrFail($courseId);
             $resources = $course->resources;
+            $lessons = $course->lessons; 
 
-
-            return view('courses.view', compact('course', 'resources'));
+            return view('courses.view', compact('course', 'resources', 'lessons'));
 
         }catch(\Exception $e){
 
@@ -90,4 +90,68 @@ class CourseController extends Controller
         }
         
     }
+
+    public function update(Request $request, $courseId){
+        try {
+            $user = auth()->user();
+
+            if ($user->role !== 'admin') {
+                return redirect()->back()->with('error', 'Unauthorized access');
+            }
+
+            $course = Course::findOrFail($courseId);
+
+            $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'files.*' => 'file|mimes:pdf|max:20480',
+            ]);
+
+            $course->update([
+                'title' => $request->input('title'),
+                'description' => $request->input('description'),
+            ]);
+
+            if ($request->hasFile('cover_image')) {
+                $course->update(['cover_image' => $request->file('cover_image')->store('course_images', 'public')]);
+            }
+
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $resourceFile) {
+                    $path = $resourceFile->store('course_resources', 'public');
+
+                    $resource = Resource::updateOrCreate(
+                        ['course_id' => $course->id, 'title' => $request->input('title')],
+                        ['file_path' => json_encode([$path]), 'description' => $request->input('description')]
+                    );
+
+                    if ($request->hasFile('cover_image')) {
+                        $resource->update(['cover_image' => $request->file('cover_image')->store('resource_images', 'public')]);
+                    }
+                }
+            }
+
+            return redirect()->back()->with('success', 'Course updated successfully!');
+        } catch (\Exception $e) {
+            Log::error('Error while updating course: ' . $e->getMessage());
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function delete($courseId){
+        try {
+            $course = Course::findOrFail($courseId);
+            $course->delete();
+
+            return redirect()->route('courses.index')->with('success', 'Course deleted successfully!');
+        } catch (\Exception $e) {
+            Log::error('Error while deleting course: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error deleting course: ' . $e->getMessage());
+        }
+    }
+
+
+
+    
 }

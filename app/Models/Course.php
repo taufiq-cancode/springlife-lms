@@ -13,4 +13,9 @@ class Course extends Model
     {
         return $this->hasMany(Resource::class);
     }
+
+    public function lessons()
+    {
+        return $this->hasMany(Lesson::class);
+    }
 }

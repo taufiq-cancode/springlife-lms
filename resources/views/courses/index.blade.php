@@ -49,7 +49,17 @@
                                             @endif
 
                                             @if(auth()->check() && auth()->user()->role === 'admin')
-                                                <a href="{{ route('courses.view', ['courseId' => $course->id]) }}" style="width: 100%;" class="btn btn-outline-primary">View Course<i class='bx bx-chevron-right'></i></a>
+                                                <div class="d-flex gap-2">
+                                                    <a href="{{ route('courses.view', ['courseId' => $course->id]) }}" style="width: 100%;" class="btn btn-outline-primary">View</a>
+                                                    
+                                                    <form method="POST" action="{{ route('courses.delete', ['courseId' => $course->id]) }}" class="d-inline">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                    
+                                                        <button type="submit" onclick="return confirm('Are you sure you want to delete this course?')" style="width: 100%;" class="btn btn-outline-danger">Delete</button>
+                                                    </form> 
+                                                       
+                                                </div>
                                             @endif
 
                                         </div>
@@ -127,7 +137,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <button type="submit" class="btn btn-primary">Upload course</button>
                     </div>
                 </form>
             </div>
