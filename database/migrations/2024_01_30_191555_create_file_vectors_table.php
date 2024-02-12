@@ -11,18 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lessons', function (Blueprint $table) {
+        Schema::create('file_vectors', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('course_id'); 
-            $table->string('title');
-            $table->string('link');
-            $table->string('video_id');
-            $table->interger('duration');
-            $table->enum('status', ['open', 'closed'])->default('open');
-            $table->timestamps();
+            $table->json('vector');
+            $table->unsignedBigInteger('file_text_id');
+            $table->unsignedBigInteger('course_id');
 
+            $table->foreign('file_text_id')->references('id')->on('file_texts')->onDelete('cascade');
             $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
-
+            $table->timestamps();
         });
     }
 
@@ -31,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('lessons');
+        Schema::dropIfExists('file_vectors');
     }
 };

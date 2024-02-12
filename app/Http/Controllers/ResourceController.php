@@ -17,8 +17,8 @@ class ResourceController extends Controller
     public function index(){
         try{
 
-            $resources = Resource::all();
-            return view('resources.index', compact('resources'));
+            $courses = Course::all();
+            return view('resources.index', compact('courses'));
 
         }catch (\Exception $e){
 
@@ -28,38 +28,28 @@ class ResourceController extends Controller
         }   
     }
 
-    public function download($resourceId){
+    public function download($courseId){
         try{
+            $course = Course::findOrFail($courseId);
 
-            $resource = Resource::findOrFail($resourceId);
+            $filePath = public_path("storage/course_files/{$course->file}");
 
-            $filePathsJson = $resource->files[0] ?? null;
+            if (file_exists($filePath)) {
+                $filename = $course->title . '.pdf';
 
-            if (!$filePathsJson) {
-                abort(404, 'File not found');
+                $headers = [
+                    'Content-Type' => 'application/pdf',
+                ];
+
+                return response()->download($filePath, $filename, $headers);
+            } else {
+                return redirect()->route('courses.index')->with('error', 'PDF file not found.');
             }
-
-            $filePaths = json_decode($filePathsJson, true);
-
-            if (!$filePaths || !is_array($filePaths) || empty($filePaths)) {
-                abort(404, 'File not found');
-            }
-
-            $filePath = $filePaths[0];
-
-            if (!$filePath || !Storage::exists($filePath)) {
-                abort(404, 'File not found');
-            }
-
-            return response()->download(Storage::path($filePath));
 
         }catch(\Exception $e){
-
-            Log::error('Error while downloading resource : '. $e->getMessage());
-            return redirect()->back()->with('error', 'Error while downloading resource');
-
+            Log::error('Error while downloading file: '. $e->getMessage());
+            return redirect()->back()->with('error', $e->getMessage());
         }
-
         
     }
 }

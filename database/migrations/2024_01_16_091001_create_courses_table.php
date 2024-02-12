@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('cover_image')->nullable();
+            $table->string('file');
             $table->enum('status', ['open', 'closed'])->default('open');
             $table->timestamps();
         });

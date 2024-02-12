@@ -5,6 +5,9 @@
     .form-check-input {
         min-width: 1.2em;
     }
+    .card.accordion-item {
+        border: 1px solid;
+    }
 </style>
 
 
@@ -29,75 +32,156 @@
                 <div class="card mb-4">
                    
                     <div class="card-body row g-3">
-                        <div class="col-lg-8">
-                          <div class="d-flex justify-content-between align-items-center flex-wrap mb-2 gap-1">
-                            <div class="me-1">
-                              <h4 class="mb-1">Lesson Title</h4>
+
+                        <div class="col-lg-6">
+                            <div class="d-flex mb-2 gap-2">
+                                <h5>Lessons</h5>  @if(auth()->check() && auth()->user()->role === 'user') | <span>2 / {{ $lessonCount }} completed</span> @endif
                             </div>
-                          </div>
+
+                            <div class="accordion mt-3 accordion-header-primary" id="accordionStyle1">
+                                @if($lessons->isEmpty())
+
+                                    <div class="alert alert-warning" role="alert">
+                                        No lessons available.
+                                    </div>
+
+                                @else
+                            
+                                    @foreach ($lessons as $lesson)
+                                        <div class="accordion-item card">
+                                            <h2 class="accordion-header">
+                                                <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#accordionStyle1-{{ $lesson->id }}" aria-expanded="false">
+                                                    {{ $loop->iteration }}. {{ $lesson->title }}
+                                                </button>
+                                            </h2>
+                                    
+                                            <div id="accordionStyle1-{{ $lesson->id }}" class="accordion-collapse collapse" data-bs-parent="#accordionStyle1" style="">
+                                                <div class="accordion-body">
+                                                    <iframe width="100%" height="315" src="https://www.youtube.com/embed/{{ $lesson->video_id }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                                                    <hr>
+                                                    <div class="d-flex mb-2 justify-content-between gap-2">
+                                                        
+                                                        {{ $lesson->duration }} minutes
+                                                    
+                                                        @if(auth()->check() && auth()->user()->role === 'admin')
+                                                            <div class="d-flex gap-2">
+                                                                
+                                                                <div>
+                                                                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalEditLesson_{{ $lesson->id }}">Edit</button>
+                                                                    <div class="modal fade" id="modalEditLesson_{{ $lesson->id }}" tabindex="-1" style="display: none;" aria-hidden="true">
+                                                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                                                            <div class="modal-content">
+                                                                                
+                                                                                <div class="modal-header">
+                                                                                    <h5 class="modal-title" id="modalCenterTitle">Edit Lesson</h5>
+                                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                                </div>
+                                                                                
+                                                                                <div class="modal-body">
+                                                            
+                                                                                    <form method="POST" action="{{ route('lessons.update', ['lessonId' => $lesson]) }}" enctype="multipart/form-data">
+                                                                                        @csrf
+                                                                                        @method('PUT')
+                                                                    
+                                                                                        <div class="row">
+                                                                                            <div class="col mb-3">
+                                                                                                <label for="nameWithTitle" class="form-label">Lesson Title</label>
+                                                                                                <input type="text" id="lessonTitle" name="title" value="{{ $lesson->title }}" class="form-control" placeholder="Enter Lesson Title">
+                                                                                            </div>
+                                                                                        </div>
+                                                            
+                                                                                        <div class="row">
+                                                                                            <div class="col mb-3">
+                                                                                                <label for="nameWithTitle" class="form-label">Lesson link</label>
+                                                                                                <input type="text" id="lessonLink" name="link" value="{{ $lesson->link }}" class="form-control" placeholder="Enter Lesson Link">
+                                                                                            </div>
+                                                                                        </div>
+                                                            
+                                                                                        <div class="row">
+                                                                                            <div class="col mb-3">
+                                                                                                <label for="nameWithTitle" class="form-label">Lesson Duration</label>
+                                                                                                <input type="text" id="lessonDuration" name="duration" value="{{ $lesson->duration }}" class="form-control" placeholder="Enter Lesson Duration">
+                                                                                            </div>
+                                                                                        </div>
+                                                                    
+                                                                                        <div class="modal-footer">
+                                                                                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                                                                                            <button type="submit" class="btn btn-primary">Update lesson</button>
+                                                                                        </div>
+                                                                                    </form>
+                                                            
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div>
+                                                                    <form method="POST" action="{{ route('lessons.delete', ['lessonId' => $lesson->id]) }}" class="d-inline">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                    
+                                                                        <button type="submit" onclick="return confirm('Are you sure you want to delete this lesson?')" style="width: 100%;" class="btn btn-outline-danger">Delete</button>
+                                                                    </form> 
+                                                                </div>
+
+                                                            </div>
+                                                        @else
+                                                        <div>
+                                                            <form id="completionForm_{{ $lesson->id }}" method="POST" action="{{ route('lessons.complete', ['lessonId' => $lesson->id]) }}">
+                                                                @csrf
+                                                                <input type="hidden" name="completed" value="{{ $lesson->users->contains(auth()->user()) && $lesson->users->find(auth()->user()->id)->pivot->completed ? '1' : '0' }}">
+                                                                <input class="form-check-input" type="checkbox" id="lesson_{{ $lesson->id }}" {{ $lesson->users->contains(auth()->user()) && $lesson->users->find(auth()->user()->id)->pivot->completed ? 'checked' : '' }}>
+                                                                <label for="lesson_{{ $lesson->id }}" class="form-check-label">Completed</label>
+                                                            </form>
+                                    
+                                                            <script>
+                                                                document.addEventListener('DOMContentLoaded', function() {
+                                                                    const completionForm = document.getElementById('completionForm_{{ $lesson->id }}');
+                                                                    const checkbox = document.getElementById('lesson_{{ $lesson->id }}');
+                                    
+                                                                    checkbox.addEventListener('change', function() {
+                                                                        completionForm.submit();
+                                                                    });
+                                                                });
+                                                            </script>
+                                                        </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    @endforeach
+
+                                @endif
+                          
+                               
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+
                           <div class="card academy-content shadow-none border">
-                            <div class="p-2">
-                                <div class="ratio ratio-16x9">
-                                    <iframe width="560" height="315" src="https://www.youtube.com/embed/R4a829TG2qM?si=M3rt56lIMV4z1e1X" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                                  </div>
-                            </div>
                             <div class="card-body">
 
                                 <h5 class="mb-2">About this course</h5>
                                 <p class="mb-0 pt-1">{{ $course->description }}</p>
                                 <hr class="my-4">
 
-                                <h5>Resources</h5>
+                                <h5>Course Resource</h5>
 
                                 <div class="list-group list-group-flush">
-                                    @forelse ($resources as $resource)
-                                        <a href="{{ route('resources.download', ['resourceId' => $resource->id]) }}" class="list-group-item list-group-item-action">
-                                            <i class='bx bxs-file-pdf'></i> {{ $resource->title }}
-                                            <i class='bx bx-download' style="float:right; color:cornflowerblue"></i>
-                                        </a>
-                                    @empty
-                                        <p>No resources available for this course.</p>
-                                    @endforelse
+                                    <a href="{{ route('courses.download', ['courseId' => $course->id]) }}" class="list-group-item list-group-item-action">
+                                        <i class='bx bxs-file-pdf'></i> {{ $course->title }}
+                                        <i class='bx bx-download' style="float:right; color:cornflowerblue"></i>
+                                    </a>
                                 </div>
                                             
                               </div>
                           </div>
                         </div>
-                        <div class="col-lg-4">
-                          <div class="accordion stick-top accordion-bordered course-content-fixed" id="courseContent">
-                            <div class="accordion-item shadow-none border mb-0">
-                              <div class="accordion-header" id="headingOne">
-                                <button type="button" class="accordion-button bg-lighter rounded-0" data-bs-target="#chapterOne" aria-expanded="false" aria-controls="chapterOne">
-                                  <span class="d-flex flex-column">
-                                    <span class="h5 mb-1">Lessons</span>
-                                    <span class="fw-normal">2 / 5 completed</span>
-                                  </span>
-                                </button>
-                              </div>
-                              <div id="chapterOne" class="accordion-collapse" data-bs-parent="#courseContent" style="">
-                                
-                                <div class="accordion-body py-3 border-top">
-                                  
-                                    @foreach ($lessons as $lesson)
-
-                                        <div class="form-check d-flex align-items-center mb-3">
-                                            <input class="form-check-input" type="checkbox" id="lesson_{{ $lesson->id }}" checked="">
-                                            
-                                            <label for="lesson_{{ $lesson->id }}" class="form-check-label ms-3">
-                                                <span class="mb-0 h6">{{ $loop->iteration }}. {{ $lesson->title }}</span>
-                                                <span class="text-muted d-block"> min</span>
-                                            </label>
-                                        </div>
-
-                                    @endforeach
-
-                                                         
-                                </div>
-                              </div>
-                            </div>
-                          
-                          </div>
-                        </div>
+                       
                       </div>
                 </div>
             </div>
@@ -145,6 +229,13 @@
                                 <div class="col mb-3">
                                     <label for="lesson_link" class="form-label">Lesson Link</label>
                                     <input type="text" name="link" class="form-control" placeholder="Enter Lesson Youtube Link" required>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col mb-3">
+                                    <label for="lesson_link" class="form-label">Lesson Duration</label>
+                                    <input type="number" name="duration" class="form-control" placeholder="Enter Lesson Duration" required>
                                 </div>
                             </div>
 
@@ -217,5 +308,7 @@
 
     <div class="content-backdrop fade"></div>
     </div>
+
+    
           
 @endsection

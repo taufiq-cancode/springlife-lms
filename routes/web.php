@@ -41,16 +41,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/edit/{courseId}', [CourseController::class, 'edit']) ->name('courses.edit');
         Route::put('/update/{courseId}', [CourseController::class, 'update']) ->name('courses.update');
         Route::delete('/delete/{courseId}', [CourseController::class, 'delete']) ->name('courses.delete');
+        Route::get('/{courseId}/download', [CourseController::class, 'download'])->name('courses.download');
     });
 
     Route::prefix('lessons')->group(function(){
         Route::get('/', [LessonController::class, 'index']) ->name('lessons.index');
-        Route::get('/add/{courseId}', [LessonController::class, 'create']) ->name('lessons.add');
         Route::post('/store/{courseId}', [LessonController::class, 'store']) ->name('lessons.store');
         Route::get('/view/{lessonId}', [LessonController::class, 'view']) ->name('lessons.view');
-        Route::get('/edit/{lessonId}', [LessonController::class, 'edit']) ->name('lessons.edit');
-        Route::post('/update/{lessonId}', [LessonController::class, 'update']) ->name('lessons.update');
-        Route::get('/delete/{lessonId}', [LessonController::class, 'delete']) ->name('lessons.delete');
+        Route::put('/update/{lessonId}', [LessonController::class, 'update']) ->name('lessons.update');
+        Route::delete('/delete/{lessonId}', [LessonController::class, 'delete']) ->name('lessons.delete');
+        Route::post('/{lessonId}/complete', [LessonController::class, 'completeLesson']) ->name('lessons.complete');
     });
     
     Route::prefix('resources')->group(function(){

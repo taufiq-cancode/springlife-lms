@@ -9,11 +9,16 @@ class Lesson extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'link'];
+    protected $fillable = ['title', 'link', 'video_id', 'duration'];
 
     public function course()
     {
         return $this->belongsTo(Course::class);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class)->withPivot('completed');
     }
 
 }

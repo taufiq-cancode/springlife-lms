@@ -34,7 +34,7 @@ class AuthenticatedSessionController extends Controller
             
         }catch(\Exception $e){
 
-            return redirect()->back()->with('error', 'Email or password incorrect');
+            return redirect()->back()->with('error', $e->getMessage());
             
         }
     }

@@ -6,21 +6,23 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
+use App\Models\Course;
+
 
 class DashboardController extends Controller
 {
     public function index(){
         try{
-            // $user = auth()->user();  
-            // if(!$user){
-            //     return redirect()->back()->with('error', 'Unauthorized access');
-            // }
 
-            return view('dashboard');
+            $courses = Course::all();
+            
+            return view('dashboard', compact('courses'));
 
         }catch (\Exception $e){
-            Log::error('Error while retrieving courses : '. $e->getMessage());
+
+            Log::error('Error while accessing dashboard: '. $e->getMessage());
             return redirect()->back()->with('error', 'Error accessing dashboard');
+
         }        
     }
 }

@@ -41,9 +41,9 @@
                                             <p class="mt-2">{{ $course->description }}</p>
                                             
                                             @if(auth()->check() && auth()->user()->role === 'user')
-                                                <p class="d-flex align-items-center"><i class="bx bx-time-five me-2"></i>30% Completed</p>
+                                                <p class="d-flex align-items-center"><i class="bx bx-time-five me-2"></i>{{ round($course->getUserProgress(Auth::user())['progressPercentage']) }}% Completed</p>
                                                 <div class="progress mb-4" style="height: 8px">
-                                                    <div class="progress-bar w-75" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    <div class="progress-bar w-{{ round($course->getUserProgress(Auth::user())['progressPercentage']) }}" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                                                 </div>
                                                 <a href="{{ route('courses.view', ['courseId' => $course->id]) }}" style="width: 100%;" class="btn btn-outline-primary">Continue Lessons <i class='bx bx-chevron-right'></i></a>
                                             @endif
@@ -122,8 +122,8 @@
 
                     <div class="row">
                         <div class="col mb-3">
-                            <label for="nameWithTitle" class="form-label">Course Resource Files</label>
-                            <input class="form-control" type="file" id="formFileMultiple" name="files[]" required multiple="" accept=".pdf">
+                            <label for="nameWithTitle" class="form-label">Course File (PDF)</label>
+                            <input class="form-control" type="file" id="formFileMultiple" name="file" required accept=".pdf">
                         </div>
                     </div>
 

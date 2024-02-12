@@ -8,11 +8,6 @@
 
         <div class="d-flex flex-wrap justify-content-between gap-3" style="padding-top:0">
             <h4 class="py-3 mb-4"><span class="text-muted fw-light">Resources</span>  </h4>
-
-            @if(auth()->check() && auth()->user()->role === 'admin')
-                <button type="button" class="btn btn-outline-primary mt-3 mb-4" data-bs-toggle="modal" data-bs-target="#modalCenter">Add Resource</button>
-            @endif
-
         </div>
 
         <div class="row">
@@ -21,15 +16,14 @@
                 <div class="card-body">
                     <div class="row gy-4 mb-4">
 
-                        @foreach ($resources as $resource)
+                        @foreach ($courses as $course)
                         
                             <div class="col-md-6 col-lg-4 mb-3">
                                 <div class="card h-100">
-                                <img class="card-img-top" src="storage/{{ $resource->cover_image ?? '../assets/img/online-learning.png' }}" alt="Card image cap">
+                                <img class="card-img-top" src="storage/{{ $course->cover_image ?? '../assets/img/online-learning.png' }}" alt="Card image cap">
                                 <div class="card-body">
-                                    <h5 class="card-title">{{ $resource->title }}</h5>
-                                    <p class="card-text">{{ $resource->description }}</p>
-                                    <a href="javascript:void(0)" class="btn btn-outline-primary">Download Resource <i class='bx bx-download'></i></a>
+                                    <h5 class="card-title">{{ $course->title }}</h5>
+                                    <a href="{{ route('courses.download', ['courseId' => $course->id]) }}" class="btn btn-outline-primary">Download Resource <i class='bx bx-download'></i></a>
                                 </div>
                                 </div>
                             </div>

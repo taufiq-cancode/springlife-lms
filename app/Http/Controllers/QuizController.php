@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Course;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -11,18 +13,10 @@ class QuizController extends Controller
 {
     public function index(){
         try{
-            // $user = auth()->user();  
-            // if(!$user){
-            //     return redirect()->back()->with('error', 'Unauthorized access');
-            // }
-
-            // $courses = Course::all();
-
-            // if (!$courses) {
-            //     return redirect()->back()->with('error', 'Courses not found');
-            // }
             
-            return view('quiz.index');
+            $courses = Course::all();
+            
+            return view('quiz.index', compact('courses'));
 
         }catch (\Exception $e){
             Log::error('Error while retrieving quiz : '. $e->getMessage());
@@ -32,16 +26,7 @@ class QuizController extends Controller
 
     public function view(){
         try{
-            // $user = auth()->user();  
-            // if(!$user){
-            //     return redirect()->back()->with('error', 'Unauthorized access');
-            // }
-
-            // $courses = Course::all();
-
-            // if (!$courses) {
-            //     return redirect()->back()->with('error', 'Courses not found');
-            // }
+            
             
             return view('quiz.view');
 
