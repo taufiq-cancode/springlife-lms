@@ -66,16 +66,19 @@ Route::middleware('auth')->group(function () {
     
     Route::prefix('quiz')->group(function(){
         Route::get('/', [QuizController::class, 'index']) ->name('quiz.index');
-        Route::get('/add/{courseId}', [QuizController::class, 'create']) ->name('quiz.add');
-        Route::post('/store/{courseId}', [QuizController::class, 'store']) ->name('quiz.store');
-        Route::get('/view', [QuizController::class, 'view']) ->name('quiz.view');
-        Route::get('/edit/{quizId}', [QuizController::class, 'edit']) ->name('quiz.edit');
-        Route::post('/update/{quizId}', [QuizController::class, 'update']) ->name('quiz.update');
-        Route::get('/delete/{quizId}', [QuizController::class, 'delete']) ->name('quiz.delete');
+        Route::get('/view/{courseId}', [QuizController::class, 'view']) ->name('quiz.view');
+        Route::get('/admin-view/{courseId}', [QuizController::class, 'adminView']) ->name('quiz.admin-view');
+        Route::post('/store/question/{courseId}', [QuizController::class, 'storeQuestion']) ->name('quiz.question.store');
+        Route::post('/upload/{courseId}', [QuizController::class, 'uploadQuestions'])->name('quiz.question.upload');
+        Route::post('/update/question/{questionId}', [QuizController::class, 'updateQuestion']) ->name('quiz.question.update');
+
+        Route::delete('/delete/question/{questionId}', [QuizController::class, 'deleteQuestion']) ->name('quiz.question.delete');
     });
     
     Route::prefix('certificates')->group(function(){
         Route::get('/', [CertificateController::class, 'index']) ->name('certificates.index');
+        Route::get('/{userId}/{courseId}', [CertificateController::class, 'generateCertificate'])->name('certificate.generate');
+
     });
     
     

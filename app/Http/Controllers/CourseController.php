@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Smalot\PdfParser\Parser;
 use OpenAI\Laravel\Facades\OpenAI;
@@ -121,7 +122,6 @@ class CourseController extends Controller
         }
 
     }
-
     public function view($courseId){
         try{
             $user = Auth::user();
@@ -137,7 +137,7 @@ class CourseController extends Controller
             $completedLessons = $progress['completedLessons'];
             $progressPercentage = $progress['progressPercentage'];
 
-            return view('courses.view', compact('course', 'resources', 'lessons', 'lessonCount'));
+            return view('courses.view', compact('course', 'resources', 'lessons', 'lessonCount', 'completedLessons'));
 
         }catch(\Exception $e){
 
@@ -148,52 +148,48 @@ class CourseController extends Controller
         
     }
     public function update(Request $request, $courseId){
-        try {
-            $user = auth()->user();
-
-            if ($user->role !== 'admin') {
+        try{
+            $user = auth()->user();  
+    
+            if ($user->role !== 'admin'){
                 return redirect()->back()->with('error', 'Unauthorized access');
             }
-
-            $course = Course::findOrFail($courseId);
-
+    
             $request->validate([
                 'title' => 'required|string|max:255',
                 'description' => 'required|string',
-                'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-                'files.*' => 'file|mimes:pdf|max:20480',
+                'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
+                'file' => 'nullable|mimes:pdf|max:20480',
             ]);
-
-            $course->update([
-                'title' => $request->input('title'),
-                'description' => $request->input('description'),
-            ]);
-
-            if ($request->hasFile('cover_image')) {
-                $course->update(['cover_image' => $request->file('cover_image')->store('course_images', 'public')]);
+    
+            $course = Course::findOrFail($courseId);
+    
+            // Delete the previous file if updating the file
+            if ($request->hasFile('file')) {
+                Storage::disk('public')->delete('course_files/' . $course->file);
             }
-
-            if ($request->hasFile('files')) {
-                foreach ($request->file('files') as $resourceFile) {
-                    $path = $resourceFile->store('course_resources', 'public');
-
-                    $resource = Resource::updateOrCreate(
-                        ['course_id' => $course->id, 'title' => $request->input('title')],
-                        ['file_path' => json_encode([$path]), 'description' => $request->input('description')]
-                    );
-
-                    if ($request->hasFile('cover_image')) {
-                        $resource->update(['cover_image' => $request->file('cover_image')->store('resource_images', 'public')]);
-                    }
-                }
-            }
-
-            return redirect()->back()->with('success', 'Course updated successfully!');
-        } catch (\Exception $e) {
-            Log::error('Error while updating course: ' . $e->getMessage());
+    
+            $file = $request->file('file');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('course_files', $fileName, 'public');
+    
+            $course->title = $request->input('title');
+            $course->description = $request->input('description');
+            $course->file = $fileName;
+            $course->save();
+    
+            $this->getEmbeddings($fileName, $course);
+    
+            return redirect()->route('courses.index')->with('success', 'Course updated successfully!');
+                
+    
+        } catch (\Exception $e){
+    
+            Log::error('Error while updating course: '. $e->getMessage());
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
+    
     public function delete($courseId){
         try {
             $course = Course::findOrFail($courseId);

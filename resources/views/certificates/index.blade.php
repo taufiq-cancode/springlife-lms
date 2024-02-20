@@ -13,18 +13,42 @@
                 <div class="card mb-4">
                 <div class="card-body">
                     <div class="row gy-4 mb-4">
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="card p-2 h-100 shadow-none border">
-                                <div class="rounded-2 text-center mb-3">
-                                    <a href="app-academy-course-details.html"><img class="img-fluid" src="../assets/img/app-academy-tutor-1.png" alt="tutor image 1"></a>
+                        @foreach ($courses as $course)
+                                @php
+                                    $totalLessons = $course->lessons()->count();
+                                    $totalDuration = $course->lessons()->sum('duration'); 
+                                @endphp
+                            
+                                <div class="col-sm-6 col-lg-4">
+                                    <div class="card p-2 h-100 shadow-none border">
+
+                                        <div class="rounded-2 text-center mb-3">
+                                            <a href="{{ route('courses.view', ['courseId' => $course->id]) }}"><img class="img-fluid" src="storage/{{ $course->cover_image ?? '../assets/img/online-learning.png' }}" alt="{{ $course->title }}"></a>
+                                        </div>
+                                        
+                                        <div class="card-body p-3 pt-2">
+
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <span class="badge bg-label-primary"><i class='bx bx-time'></i> {{ $totalDuration }} Minutes</span>
+                                                <span class="badge bg-label-secondary"><i class='bx bxs-videos'></i> {{ $totalLessons }} Lessons</span>
+                                            </div>
+                                            
+                                            <a href="{{ route('courses.view', ['courseId' => $course->id]) }}" class="h5">{{ $course->title }}</a>
+                                            <p class="mt-2">{{ $course->description }}</p>
+                                            
+                                                <p class="d-flex align-items-center"><i class="bx bx-time-five me-2"></i>{{ round($course->getUserProgress(Auth::user())['progressPercentage']) }}% Completed</p>
+                                                <div class="progress mb-4" style="height: 8px">
+                                                    <div class="progress-bar w-{{ round($course->getUserProgress(Auth::user())['progressPercentage']) }}" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                                <a href="{{ route('certificate.generate', ['userId' => $user->id, 'courseId' => $course->id]) }}" style="width: 100%;" class="btn btn-outline-primary">Get Certificate <i class='bx bx-download'></i></a>
+
+
+                                        </div>
+
+                                    </div>
                                 </div>
-                                <div class="card-body p-3 pt-2">
-                                    <a href="app-academy-course-details.html" class="h5">Basics of Angular</a>
-                                    <p class="mt-2">Introductory course for Angular and framework basics in web development.</p>
-                                    <a href="javascript:void(0)" class="btn btn-outline-primary">Download Certificate <i class='bx bx-download'></i></a>
-                                </div>
-                            </div>
-                        </div>
+                            
+                            @endforeach
                     </div>
                 </div>
 

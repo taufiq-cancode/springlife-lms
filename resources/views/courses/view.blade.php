@@ -35,7 +35,7 @@
 
                         <div class="col-lg-6">
                             <div class="d-flex mb-2 gap-2">
-                                <h5>Lessons</h5>  @if(auth()->check() && auth()->user()->role === 'user') | <span>2 / {{ $lessonCount }} completed</span> @endif
+                                <h5>Lessons</h5>  @if(auth()->check() && auth()->user()->role === 'user') | <span>{{ $completedLessons }} / {{ $lessonCount }} completed</span> @endif
                             </div>
 
                             <div class="accordion mt-3 accordion-header-primary" id="accordionStyle1">
@@ -282,7 +282,7 @@
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="nameWithTitle" class="form-label">Course Resource Files</label>
-                                <input class="form-control" type="file" id="formFileMultiple" name="files[]" multiple="" accept=".pdf">
+                                <input class="form-control" type="file" id="formFileMultiple" name="file" multiple="" accept=".pdf">
                             </div>
                         </div>
     

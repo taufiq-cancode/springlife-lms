@@ -22,6 +22,10 @@
                         <div class="row gy-4 mb-4">
 
                             @foreach ($courses as $course)
+                                @php
+                                    $totalLessons = $course->lessons()->count();
+                                    $totalDuration = $course->lessons()->sum('duration'); 
+                                @endphp
                             
                                 <div class="col-sm-6 col-lg-4">
                                     <div class="card p-2 h-100 shadow-none border">
@@ -33,8 +37,8 @@
                                         <div class="card-body p-3 pt-2">
 
                                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                                <span class="badge bg-label-primary"><i class='bx bx-time'></i> 20 Hours</span>
-                                                <span class="badge bg-label-secondary"><i class='bx bxs-videos'></i> 20 Lessons</span>
+                                                <span class="badge bg-label-primary"><i class='bx bx-time'></i> {{ $totalDuration }} Minutes</span>
+                                                <span class="badge bg-label-secondary"><i class='bx bxs-videos'></i> {{ $totalLessons }} Lessons</span>
                                             </div>
                                             
                                             <a href="{{ route('courses.view', ['courseId' => $course->id]) }}" class="h5">{{ $course->title }}</a>

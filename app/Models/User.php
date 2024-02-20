@@ -51,4 +51,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Lesson::class)->withPivot('completed');
     }
+
+    public function hasCompletedCourse($course)
+    {
+        return $this->lessons()->where('course_id', $course->id)->count() == $course->lessons->count();
+    }
 }

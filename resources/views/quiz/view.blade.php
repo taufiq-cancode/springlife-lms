@@ -16,7 +16,6 @@
             <div class="modal-content">
                 <div class="modal-header border-bottom pb-3">
                   <h5 class="modal-title" id="modalCenterTitle">Quiz Instructions</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   <br>
                 </div>
 
@@ -30,7 +29,7 @@
                     </ul>
                 </div>
                 <div class="modal-footer">
-                  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Understood</button>
+                  <button type="button" id="understoodButton" class="btn btn-outline-secondary" data-bs-dismiss="modal">Understood</button>
                 </div>
               </div>
         </div>
@@ -40,47 +39,52 @@
     <!-- Content -->
 
     <div class="container-xxl flex-grow-1 container-p-y">
-        <h4 class="py-3 mb-4">
-            <span class="text-muted fw-light">Quizes / Courses</span> Course Title
-          </h4>
+
+        <div class="d-flex flex-wrap justify-content-between gap-3" style="padding-top:0">
+            <h4 class="py-3 mb-4"><span class="text-muted fw-light">Quizes / </span>{{ $course->title }}</h4>
+
+            <h5 class="py-3 mb-4">
+                <span id="timer" class="text-muted fw-light">30:00</span> left
+            </h5>
+
+        </div>
+
         <div class="row">
             <div class="col-lg-12">
                 <div class="card mb-4">
+                    @foreach($questions as $key => $question)
                 
-                <div class="card-header d-flex flex-wrap justify-content-between gap-3">
-                    <div class="card-title mb-0 me-1">
-                        <h5 class="mb-1">Question 1: What is the capital of France?</h5>
-                    </div>
-                </div>
+                        <div class="card-header d-flex flex-wrap justify-content-between gap-3">
+                            <div class="card-title mb-0 me-1">
+                                <h5 class="mb-1">Question {{ $key + 1 }}: {{ $question->question_text }}</h5>
+                            </div>
+                        </div>
 
-                <div class="card-body">
-                    <div class="row gy-4 mb-4">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="q1" id="q1_option1" value="option1">
-                            <label class="form-check-label" for="q1_option1">Paris</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="q1" id="q1_option2" value="option2">
-                            <label class="form-check-label" for="q1_option2">Berlin</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="q1" id="q1_option3" value="option3">
-                            <label class="form-check-label" for="q1_option3">London</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="q1" id="q1_option3" value="option3">
-                            <label class="form-check-label" for="q1_option3">London</label>
-                        </div>
-                    </div>
-                </div>
+                        <div class="card-body">
+                            <div class="row gy-4 mb-4">
 
-                <div class="card-footer d-flex flex- gap-3" style="padding-top:0">
-                    <button type="button" class="btn btn-primary mt-3">Submit</button>
-                    <button type="button" class="btn btn-secondary mt-3">Skip Question</button>
-                </div>
+                                @foreach(['option1', 'option2', 'option3', 'option4'] as $option)
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="q{{ $key + 1 }}" id="q{{ $key + 1 }}_{{ $option }}" value="{{ $option }}">
+                                        <label class="form-check-label" for="q{{ $key + 1 }}_{{ $option }}">{{ $question->$option }}</label>
+                                    </div>
+                                @endforeach   
+                    
+                            </div>
+                        </div>
+
+                    @endforeach
+
+                    <div class="card-footer d-flex flex- gap-3" style="padding-top:0">
+                        <button type="button" id="submitQuiz" onclick="submitQuiz()" class="btn btn-primary mt-3">Submit Quiz</button>
+                       
+                        <button type="button" id="skipQuestion" class="btn btn-secondary mt-3">Skip Question</button>
+                    </div>
 
                 </div>
             </div>
+
+            
         </div>
 
     </div>
@@ -115,5 +119,42 @@
         $('#backDropModal').modal('show');
     });
 </script>
+
+<script>
+    const submitQuiz = () => {
+        console.log('Submit quiz button clicked');
+    }
+</script>
+
+{{-- <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Add debugging statement to check if the script is loaded
+        console.log('Script loaded');
+
+        document.getElementById('submitQuiz').addEventListener('click', function() {
+            // Add debugging statement to check if the event listener is triggered
+            console.log('Submit quiz button clicked');
+
+            let score = 0;
+            @foreach($questions as $key => $question)
+                const selectedOption = document.querySelector('input[name="q{{$key + 1}}"]:checked');
+                if (selectedOption) {
+                    const selectedValue = selectedOption.value;
+                    const correctOption = '{{$question->correct_option}}';
+                    console.log('Selected option:', selectedValue);
+                    console.log('Correct option:', correctOption);
+                    if (selectedValue === correctOption) {
+                        score++;
+                    }
+                }
+            @endforeach
+            // Display the score using an alert
+            alert('Your score is: ' + score);
+        });
+    });
+</script> --}}
+
+
+
           
 @endsection
