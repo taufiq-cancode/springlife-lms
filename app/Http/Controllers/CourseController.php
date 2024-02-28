@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\FileText;
 use App\Models\FileVector;
 use App\Models\Lesson;
+use App\Models\Comment;
 use App\Models\Resource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -44,18 +45,23 @@ class CourseController extends Controller
             $request->validate([
                 'title' => 'required|string|max:255',
                 'description' => 'required|string',
-                'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
                 'file' => 'required|mimes:pdf|max:20480',
+                'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
             ]);
 
             $file = $request->file('file');
             $fileName = time() . '_' . $file->getClientOriginalName();
             $file->storeAs('course_files', $fileName, 'public');
 
+            $cover_image = $request->file('cover_image');
+            $imageName = time() . '_' . $cover_image->getClientOriginalName();
+            $cover_image->storeAs('course_images', $imageName, 'public');
+            
             $course = new Course();
             $course->title = $request->input('title');
             $course->description = $request->input('description');
             $course->file = $fileName;
+            $course->cover_image = $imageName;
             $course->save();
 
             $this->getEmbeddings($fileName, $course);
@@ -130,6 +136,7 @@ class CourseController extends Controller
             $resources = $course->resources;
             $lessons = $course->lessons; 
             $lessonCount = $course->lessons->count();
+            $comments = Comment::all();
 
             $progress = $course->getUserProgress($user);
 
@@ -137,7 +144,7 @@ class CourseController extends Controller
             $completedLessons = $progress['completedLessons'];
             $progressPercentage = $progress['progressPercentage'];
 
-            return view('courses.view', compact('course', 'resources', 'lessons', 'lessonCount', 'completedLessons'));
+            return view('courses.view', compact('course', 'resources', 'lessons', 'lessonCount', 'completedLessons', 'comments'));
 
         }catch(\Exception $e){
 
@@ -164,25 +171,34 @@ class CourseController extends Controller
     
             $course = Course::findOrFail($courseId);
     
-            // Delete the previous file if updating the file
             if ($request->hasFile('file')) {
                 Storage::disk('public')->delete('course_files/' . $course->file);
+
+                $file = $request->file('file');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $file->storeAs('course_files', $fileName, 'public');
+
+                $course->file = $fileName;
+
+                $this->getEmbeddings($fileName, $course);
             }
-    
-            $file = $request->file('file');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('course_files', $fileName, 'public');
-    
+
+            if ($request->hasFile('cover_image')) {
+                Storage::disk('public')->delete('course_images/' . $course->file);
+
+                $cover_image = $request->file('cover_image');
+                $imageName = time() . '_' . $cover_image->getClientOriginalName();
+                $cover_image->storeAs('course_images', $imageName, 'public');
+
+                $course->cover_image = $imageName;
+            }
+            
             $course->title = $request->input('title');
             $course->description = $request->input('description');
-            $course->file = $fileName;
             $course->save();
-    
-            $this->getEmbeddings($fileName, $course);
-    
+        
             return redirect()->route('courses.index')->with('success', 'Course updated successfully!');
-                
-    
+
         } catch (\Exception $e){
     
             Log::error('Error while updating course: '. $e->getMessage());

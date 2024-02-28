@@ -20,7 +20,7 @@
                         
                             <div class="col-md-6 col-lg-4 mb-3">
                                 <div class="card h-100">
-                                <img class="card-img-top" src="storage/{{ $course->cover_image ?? '../assets/img/online-learning.png' }}" alt="Card image cap">
+                                <img class="card-img-top" src="storage/course_images/{{ $course->cover_image ?? '../assets/img/online-learning.png' }}" alt="Card image cap">
                                 <div class="card-body">
                                     <h5 class="card-title">{{ $course->title }}</h5>
                                     <a href="{{ route('courses.download', ['courseId' => $course->id]) }}" class="btn btn-outline-primary">Download Resource <i class='bx bx-download'></i></a>

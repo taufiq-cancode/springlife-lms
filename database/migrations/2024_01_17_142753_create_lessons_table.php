@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('link');
             $table->string('video_id');
-            $table->interger('duration');
+            $table->integer('duration');
             $table->enum('status', ['open', 'closed'])->default('open');
             $table->timestamps();
 

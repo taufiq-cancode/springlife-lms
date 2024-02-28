@@ -19,11 +19,11 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('phone')->nullable();
             $table->string('avatar')->nullable();
-            $table->string('gender');
+            $table->string('gender')->nullable();
             $table->date('date_of_birth')->nullable();
             $table->string('country')->nullable();
             $table->string('state')->nullable();
-            $table->enum('role', ['admin', 'user'])->default('user');
+            $table->enum('role', ['admin', 'tutor', 'user'])->default('user');
             $table->enum('status', ['0', '1'])->default('1');
             $table->string('password');
             $table->rememberToken();

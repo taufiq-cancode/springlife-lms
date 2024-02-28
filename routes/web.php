@@ -7,6 +7,7 @@ use App\Http\Controllers\LessonController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\ResourceController;
+use App\Http\Controllers\CommentController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -78,10 +79,10 @@ Route::middleware('auth')->group(function () {
     Route::prefix('certificates')->group(function(){
         Route::get('/', [CertificateController::class, 'index']) ->name('certificates.index');
         Route::get('/{userId}/{courseId}', [CertificateController::class, 'generateCertificate'])->name('certificate.generate');
-
     });
-    
-    
+
+    Route::post('/comments/{courseId}', [CommentController::class, 'store'])->name('comment.store');
+    Route::post('/reply/{courseId}', [CommentController::class, 'store'])->name('reply.store');
 
 });
 

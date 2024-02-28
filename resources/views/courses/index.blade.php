@@ -31,7 +31,9 @@
                                     <div class="card p-2 h-100 shadow-none border">
 
                                         <div class="rounded-2 text-center mb-3">
-                                            <a href="{{ route('courses.view', ['courseId' => $course->id]) }}"><img class="img-fluid" src="storage/{{ $course->cover_image ?? '../assets/img/online-learning.png' }}" alt="{{ $course->title }}"></a>
+                                            <a href="{{ route('courses.view', ['courseId' => $course->id]) }}">
+                                                <img class="img-fluid" src="storage/course_images/{{ $course->cover_image ?? '../assets/img/online-learning.png' }}" alt="{{ $course->title }}">
+                                            </a>
                                         </div>
                                         
                                         <div class="card-body p-3 pt-2">

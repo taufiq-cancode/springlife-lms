@@ -8,6 +8,7 @@
     .card.accordion-item {
         border: 1px solid;
     }
+
 </style>
 
 
@@ -32,7 +33,6 @@
                 <div class="card mb-4">
                    
                     <div class="card-body row g-3">
-
                         <div class="col-lg-6">
                             <div class="d-flex mb-2 gap-2">
                                 <h5>Lessons</h5>  @if(auth()->check() && auth()->user()->role === 'user') | <span>{{ $completedLessons }} / {{ $lessonCount }} completed</span> @endif
@@ -40,13 +40,10 @@
 
                             <div class="accordion mt-3 accordion-header-primary" id="accordionStyle1">
                                 @if($lessons->isEmpty())
-
                                     <div class="alert alert-warning" role="alert">
                                         No lessons available.
                                     </div>
-
                                 @else
-                            
                                     @foreach ($lessons as $lesson)
                                         <div class="accordion-item card">
                                             <h2 class="accordion-header">
@@ -153,10 +150,7 @@
 
                                         </div>
                                     @endforeach
-
                                 @endif
-                          
-                               
                             </div>
                         </div>
 
@@ -167,22 +161,118 @@
 
                                 <h5 class="mb-2">About this course</h5>
                                 <p class="mb-0 pt-1">{{ $course->description }}</p>
+                                
                                 <hr class="my-4">
 
                                 <h5>Course Resource</h5>
-
                                 <div class="list-group list-group-flush">
                                     <a href="{{ route('courses.download', ['courseId' => $course->id]) }}" class="list-group-item list-group-item-action">
                                         <i class='bx bxs-file-pdf'></i> {{ $course->title }}
                                         <i class='bx bx-download' style="float:right; color:cornflowerblue"></i>
                                     </a>
                                 </div>
+
+                                <hr class="my-4">
+
+                                <h5>Course Instructor</h5>
+                                <div class="d-flex justify-content-start align-items-center user-name">
+                                    <div class="avatar-wrapper">
+                                        <div class="avatar avatar-lg me-2">
+                                            <img src="https://ui-avatars.com/api/?name={{ Illuminate\Support\Str::title(auth()->user()->firstname) }}+{{ Illuminate\Support\Str::title(auth()->user()->lastname) }}&background=a5a6ff&color=fff" alt="Avatar" class="rounded-circle">
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                      <span class="fw-medium">Devonne Wallbridge</span>
+                                      <small class="text-muted">Web Developer, Designer, and Teacher</small>
+                                    </div>
+                                </div>
                                             
                               </div>
                           </div>
                         </div>
-                       
-                      </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="card-body row g-3">
+                        <div class="row mb-3">
+                            <h5>{{  $comments->count() }} Comments</h5>
+                            <form action="{{ route('comment.store', ['courseId' => $course->id]) }}" method="POST">
+                                @csrf
+                                <textarea id="basic-default-message" name="content" class="form-control" placeholder="Add a comment"></textarea>
+                                <button class="btn btn-primary mt-1" type="submit">Comment</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <br>
+
+                    @foreach($comments as $comment)
+                        
+                        <div class="card-body row comment" style="margin-top:-35px">
+                            @if ($comment->parent_id == null)
+                                <div class="d-flex justify-content-start align-items-center user-name">
+                                    <div class="avatar-wrapper">
+                                        <div class="avatar avatar-m me-2" style="margin-top: -32px">
+                                            <img src="https://ui-avatars.com/api/?name={{ Illuminate\Support\Str::title($comment->user->firstname) }}+{{ Illuminate\Support\Str::title($comment->user->lastname) }}&background=a5a6ff&color=fff" alt="Avatar" class="rounded-circle">
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-medium">{{ $comment->user->firstname . ' ' . $comment->user->lastname}}</span>
+                                        <p class="text-muted">{{ $comment->content }}</p>
+                                        <div class="d-flex justify-content-start gap-3" style="margin-top: -10px;">
+                                            <button class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#accordionIcon-reply-{{ $comment->id }}" aria-expanded="true" aria-controls="accordionIcon-reply-{{ $comment->id }}" >Reply</button> 
+                                            <button class="btn btn-sm btn-secondary" data-bs-toggle="collapse" data-bs-target="#accordionIcon-replies-{{ $comment->id }}" aria-expanded="true" aria-controls="accordionIcon-replies-{{ $comment->id }}" >{{ $comment->replies->count() }} 
+                                                @if ($comment->replies->count() > 1) replies @else reply @endif
+                                            </button>
+                                        </div>  
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item card" style="border:0; box-shadow:none;">
+                                    <div id="accordionIcon-reply-{{ $comment->id }}" class="accordion-collapse collapse" data-bs-parent="#accordionIcon" >
+                                        <div class="accordion-body" style="padding: 0.79rem 2.5rem;">
+                                            <form action="{{ route('comment.store', ['courseId' => $course->id]) }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="parent_id" value="{{ $comment->id }}">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" name="content" placeholder="Add a reply" aria-label="Recipient's username" aria-describedby="button-addon2">
+                                                    <button class="btn btn-outline-primary" type="submit" id="button-addon2">Reply</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>  
+                            @endif
+
+                            
+
+                            <div class="accordion-item card" style="border:0; box-shadow:none;">
+                                <div id="accordionIcon-replies-{{ $comment->id }}" class="accordion-collapse collapse" data-bs-parent="#accordionIcon" >
+                                    <div class="accordion-body" >
+                                        @foreach($comment->replies as $reply)
+                                            @if ($reply->parent_id != null)
+                                                <div class="d-flex justify-content-start align-items-center user-name">
+                                                    <div class="avatar-wrapper">
+                                                        <div class="avatar avatar-sm me-2" style="margin-top: -20px">
+                                                            <img src="https://ui-avatars.com/api/?name={{ Illuminate\Support\Str::title($comment->user->firstname) }}+{{ Illuminate\Support\Str::title($comment->user->lastname) }}&background=a5a6ff&color=fff" alt="Avatar" class="rounded-circle">
+                                                        </div>
+                                                    </div>
+                    
+                                                    <div class="d-flex flex-column" >
+                                                        <span class="fw-medium">{{ $reply->user->firstname . ' ' . $reply->user->lastname}}</span>
+                                                        <p class="text-muted">{{ $reply->content }}</p> 
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>             
+                        </div>
+                    @endforeach
+
                 </div>
             </div>
         </div>
