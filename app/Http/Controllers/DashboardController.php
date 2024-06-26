@@ -14,23 +14,29 @@ use App\Models\Lesson;
 class DashboardController extends Controller
 {
     public function index(){
-        try{
+        try {
+            $user = auth()->user();
 
+            $courses = [];
+
+            if ($user->role === 'admin') {
+                $courses = Course::all();
+            } elseif ($user->role === 'tutor') {
+                $courses = $user->tutoredCourses;
+            } else {
+                $courses = Course::all();
+            }
             $totalLessons = Lesson::count();
-            $totalCourses = Course::count();
-
-            $courses = Course::all();
-
+            $totalCourses = $courses->count();
+    
             $user = Auth::user();
             $completedLessons = $user->lessons()->wherePivot('completed', true)->count();
             
             return view('dashboard', compact('courses', 'totalLessons', 'completedLessons', 'totalCourses'));
-
-        }catch (\Exception $e){
-
-            Log::error('Error while accessing dashboard: '. $e->getMessage());
+        } catch (\Exception $e) {
+            Log::error('Error while accessing dashboard: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Error accessing dashboard');
-
         }        
     }
+    
 }

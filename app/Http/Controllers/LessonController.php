@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class LessonController extends Controller
 {
@@ -32,25 +33,23 @@ class LessonController extends Controller
         }        
     }
 
-    public function store(Request $request){
-
-        try{
+    public function store(Request $request) {
+        try {
             $request->validate([
                 'course_id' => 'required|exists:courses,id',
                 'title' => 'required|string|max:255',
                 'link' => 'required|string',
                 'duration' => 'required|integer',
             ]);
-
-            $videoId = $this->extractVideoId($request->input('link'));
-
     
             $courseId = $request->input('course_id');
             $course = Course::findOrFail($courseId);
-
-            if (!$course) {
-                return redirect()->back()->with('error', 'Course not found');
+    
+            if (!$course->tutors->contains(auth()->user())) {
+                return redirect()->back()->with('error', 'You are not authorized to add lessons to this course');
             }
+    
+            $videoId = $this->extractVideoId($request->input('link'));
     
             $lesson = new Lesson([
                 'title' => $request->input('title'),
@@ -63,13 +62,17 @@ class LessonController extends Controller
             $lesson->save();
     
             return redirect()->back()->with('success', 'Lesson added successfully');
-
-        }catch(\Exception $e){
-            Log::error('Error while adding lesson: '. $e->getMessage());
+    
+        } catch (ValidationException $e) {
+            Log::error('Error while adding lesson: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error while adding lesson');
+    
+        } catch (\Exception $e) {
+            Log::error('Error while adding lesson: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Error while adding lesson');
         }
-
     }
+    
 
     public function view($lessonId){
         try {
@@ -87,34 +90,45 @@ class LessonController extends Controller
         }
     }
 
-    public function update(Request $request, $lessonId){
+    public function update(Request $request, $lessonId) 
+    {
         try {
             $lesson = Lesson::findOrFail($lessonId);
-
+            $course = $lesson->course;
+    
+            if (!$course->tutors->contains(auth()->user())) {
+                return redirect()->back()->with('error', 'You are not authorized to update lessons for this course');
+            }
+    
             $request->validate([
                 'title' => 'required|string|max:255',
                 'link' => 'required|string',
                 'duration' => 'required|numeric',
             ]);
-
+    
             $videoId = $this->extractVideoId($request->input('link'));
-
+    
             $lesson->update([
                 'title' => $request->input('title'),
                 'link' => $request->input('link'),
                 'video_id' => $videoId,
                 'duration' => $request->input('duration'),
             ]);
-
+    
             return redirect()->back()->with('success', 'Lesson updated successfully!');
-            
+    
+        } catch (ValidationException $e) {
+            Log::error('Error while updating lesson: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error while updating lesson');
+    
         } catch (\Exception $e) {
             Log::error('Error while updating lesson: ' . $e->getMessage());
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
-
-    public function delete($lessonId){
+    
+    public function delete($lessonId)
+    {
         try {
             $lesson = Lesson::findOrFail($lessonId);
 
@@ -127,7 +141,8 @@ class LessonController extends Controller
         }
     }
 
-    public function completeLesson(Request $request, $lessonId){
+    public function completeLesson(Request $request, $lessonId)
+    {
         try {
             $completed = $request->input('completed');
     
@@ -144,6 +159,4 @@ class LessonController extends Controller
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
-    
-
 }

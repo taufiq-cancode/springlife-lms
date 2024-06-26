@@ -19,7 +19,6 @@ class Course extends Model
         return $this->hasMany(Lesson::class);
     }
 
-    // Inside your Course model
     public function getUserProgress(User $user)
     {
         $totalLessons = $this->lessons->count();
@@ -44,9 +43,8 @@ class Course extends Model
         return $this->belongsToMany(Question::class);
     }
 
-    
-
-
-
-
+    public function tutors()
+    {
+        return $this->belongsToMany(User::class, 'course_tutors', 'course_id', 'tutor_id');
+    }
 }

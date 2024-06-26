@@ -16,17 +16,15 @@
     <!-- Content -->
 
     <div class="container-xxl flex-grow-1 container-p-y">
-      <div class="d-flex flex-wrap justify-content-between gap-3" style="padding-top:0">
-        <h4 class="py-3 mb-4"><span class="text-muted fw-light">Courses /</span> {{ $course->title }} </h4>
-
-        @if(auth()->check() && auth()->user()->role === 'admin')
-        <div>
-            <button type="button" class="btn btn-outline-primary mt-3 mb-4" data-bs-toggle="modal" data-bs-target="#modalEdit">Edit Course</button>
-            <button type="button" class="btn btn-outline-primary mt-3 mb-4" data-bs-toggle="modal" data-bs-target="#modalCenter">Add Lesson</button>
+        <div class="d-flex flex-wrap justify-content-between gap-3" style="padding-top:0">
+            <h4 class="py-3 mb-4"><span class="text-muted fw-light">Courses /</span> {{ $course->title }} </h4>
+            @if(auth()->check() && (auth()->user()->role === 'admin' || $course->tutors->contains(auth()->user())))
+                <div>
+                    <button type="button" class="btn btn-outline-primary mt-3 mb-4" data-bs-toggle="modal" data-bs-target="#modalEdit">Edit Course</button>
+                    <button type="button" class="btn btn-outline-primary mt-3 mb-4" data-bs-toggle="modal" data-bs-target="#modalCenter">Add Lesson</button>
+                </div>
+            @endif
         </div>
-        @endif
-
-      </div>
       
         <div class="row">
             <div class="col-lg-12">
@@ -60,8 +58,8 @@
                                                         
                                                         {{ $lesson->duration }} minutes
                                                     
-                                                        @if(auth()->check() && auth()->user()->role === 'admin')
-                                                            <div class="d-flex gap-2">
+                                                        @if(auth()->check() && (auth()->user()->role === 'admin' || $course->tutors->contains(auth()->user())))
+                                                        <div class="d-flex gap-2">
                                                                 
                                                                 <div>
                                                                     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalEditLesson_{{ $lesson->id }}">Edit</button>
@@ -174,20 +172,31 @@
 
                                 <hr class="my-4">
 
-                                <h5>Course Instructor</h5>
+                                <h5>Course Tutor</h5>
                                 <div class="d-flex justify-content-start align-items-center user-name">
                                     <div class="avatar-wrapper">
                                         <div class="avatar avatar-lg me-2">
-                                            <img src="https://ui-avatars.com/api/?name={{ Illuminate\Support\Str::title(auth()->user()->firstname) }}+{{ Illuminate\Support\Str::title(auth()->user()->lastname) }}&background=a5a6ff&color=fff" alt="Avatar" class="rounded-circle">
+                                            @if($course->tutors->isNotEmpty())
+                                                @php
+                                                    $tutor = $course->tutors->first();
+                                                @endphp
+                                                <img src="https://ui-avatars.com/api/?name={{ Illuminate\Support\Str::title($tutor->firstname) }}+{{ Illuminate\Support\Str::title($tutor->lastname) }}&background=a5a6ff&color=fff" alt="Avatar" class="rounded-circle">
+                                            @else
+                                                <img src="https://ui-avatars.com/api/?name=Unknown&background=a5a6ff&color=fff" alt="Avatar" class="rounded-circle">
+                                            @endif
                                         </div>
                                     </div>
                                     <div class="d-flex flex-column">
-                                      <span class="fw-medium">Devonne Wallbridge</span>
-                                      <small class="text-muted">Web Developer, Designer, and Teacher</small>
+                                        @if($course->tutors->isNotEmpty())
+                                            <span class="fw-medium">{{ $tutor->firstname }} {{ $tutor->lastname }}</span>
+                                            <small class="text-muted">{{ ucwords($tutor->role) }} - {{ ucwords($course->title) }}</small>
+                                        @else
+                                            <span class="fw-medium">No tutor assigned</span>
+                                            <small class="text-muted">N/A</small>
+                                        @endif
                                     </div>
-                                </div>
-                                            
-                              </div>
+                                </div>                                      
+                            </div>
                           </div>
                         </div>
                     </div>
@@ -295,8 +304,7 @@
     <!-- / Footer -->
 
     
-    @if(auth()->check() && auth()->user()->role === 'admin')
-
+    @if(auth()->check() && (auth()->user()->role === 'admin' || $course->tutors->contains(auth()->user())))
         <div class="modal fade" id="modalCenter" tabindex="-1" style="display: none;" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
@@ -350,55 +358,63 @@
                 </div>
                 
                 <div class="modal-body">
-
-                    <form method="POST" action="{{ route('courses.update', ['courseId' => $course]) }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('courses.update', ['courseId' => $course->id]) }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
-    
+                    
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="nameWithTitle" class="form-label">Course Title</label>
                                 <input type="text" id="nameWithTitle" name="title" value="{{ $course->title }}" class="form-control" placeholder="Enter Course Title">
                             </div>
                         </div>
-    
+                    
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="nameWithTitle" class="form-label">Course Description</label>
                                 <textarea class="form-control" id="exampleFormControlTextarea1" name="description" rows="3">{{ $course->description }}</textarea>
                             </div>
                         </div>
-    
+                    
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="nameWithTitle" class="form-label">Course Resource Files</label>
-                                <input class="form-control" type="file" id="formFileMultiple" name="file" multiple="" accept=".pdf">
+                                <input class="form-control" type="file" id="formFileMultiple" name="file" accept=".pdf">
                             </div>
                         </div>
-    
+                    
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="nameWithTitle" class="form-label">Cover Image</label>
                                 <input class="form-control" type="file" name="cover_image" id="formFileMultiple" accept=".png, .jpg, .jpeg">
                             </div>
                         </div>
-    
+                    
+                        @if(auth()->user()->role === 'admin')
+                        <div class="row">
+                            <div class="col mb-3">
+                                <label for="tutorSelect" class="form-label">Course Tutor</label>
+                                <select id="tutorSelect" name="tutor_id" class="form-select">
+                                    @foreach($tutors as $tutor)
+                                        <option value="{{ $tutor->id }}" {{ $course->tutors->contains($tutor->id) ? 'selected' : '' }}>
+                                            {{ $tutor->firstname }} {{ $tutor->lastname }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
+                        @endif
+                    
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-primary">Update course</button>
                         </div>
-                    </form>
-
+                    </form>                    
                 </div>
             </div>
         </div>
-
     @endif  
 
     <div class="content-backdrop fade"></div>
-    </div>
-
-    
-          
+    </div>  
 @endsection

@@ -13,26 +13,32 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="card mb-4">
-                <div class="card-body">
-                    <div class="row gy-4 mb-4">
-
-                        @foreach ($courses as $course)
-                        
-                            <div class="col-md-6 col-lg-4 mb-3">
-                                <div class="card h-100">
-                                <img class="card-img-top" src="storage/course_images/{{ $course->cover_image ?? '../assets/img/online-learning.png' }}" alt="Card image cap">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $course->title }}</h5>
-                                    <a href="{{ route('courses.download', ['courseId' => $course->id]) }}" class="btn btn-outline-primary">Download Resource <i class='bx bx-download'></i></a>
+                    <div class="card-body">
+                        <div class="row gy-4 mb-4">
+                            @if ($courses->isEmpty())
+                                <div class="alert alert-warning me-1" style="margin-bottom: -15px;" role="alert">
+                                    @if(auth()->check() && auth()->user()->role === 'tutor')
+                                        No courses assigned yet, check back later.
+                                    @else
+                                        No courses uploaded yet, check back later.
+                                    @endif
                                 </div>
-                                </div>
-                            </div>
-
-                        @endforeach
-
+                            @else
+                                @foreach ($courses as $course)
+                                    <div class="col-md-6 col-lg-4 mb-3">
+                                        <div class="card h-100">
+                                            <img class="card-img-top" src="storage/course_images/{{ $course->cover_image ?? '../assets/img/online-learning.png' }}" alt="Card image cap">
+                                            <div class="card-body">
+                                                <h5 class="card-title">{{ $course->title }}</h5>
+                                                <a href="{{ route('courses.download', ['courseId' => $course->id]) }}" class="btn btn-outline-primary">Download Resource <i class='bx bx-download'></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
+                        </div>
                     </div>
-
-                </div>
+                    
                 </div>
             </div>
         </div>

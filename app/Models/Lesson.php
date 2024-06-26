@@ -20,5 +20,4 @@ class Lesson extends Model
     {
         return $this->belongsToMany(User::class)->withPivot('completed');
     }
-
 }

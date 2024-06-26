@@ -17,7 +17,16 @@ class ResourceController extends Controller
     public function index(){
         try{
 
-            $courses = Course::all();
+            $user = auth()->user();
+            $courses = [];
+
+            if ($user->role === 'admin') {
+                $courses = Course::all();
+            } elseif ($user->role === 'tutor') {
+                $courses = $user->tutoredCourses;
+            } else {
+                $courses = Course::all();
+            }
             return view('resources.index', compact('courses'));
 
         }catch (\Exception $e){

@@ -108,6 +108,15 @@
         </a>
       </li>
 
+      @if(auth()->check() && auth()->user()->role === 'admin')
+        <li class="menu-item {{ ($prefix == '/users')?'active':'' }}">
+          <a href="{{ route('users.index') }}" class="menu-link">
+            <i class='bx bx-certification menu-icon'></i>
+            <div data-i18n="Layouts">Users</div>
+          </a>
+        </li>
+      @endif
+
       <li class="menu-header small text-uppercase"><span class="menu-header-text" data-i18n="Components">User</span></li>
 
       <li class="menu-item {{ ($prefix == '/profile')?'active':'' }}">

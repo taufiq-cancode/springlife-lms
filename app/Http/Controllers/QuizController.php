@@ -15,7 +15,16 @@ class QuizController extends Controller
     public function index(){
         try{
             
-            $courses = Course::all();
+            $user = auth()->user();
+            $courses = [];
+
+            if ($user->role === 'admin') {
+                $courses = Course::all();
+            } elseif ($user->role === 'tutor') {
+                $courses = $user->tutoredCourses;
+            } else {
+                $courses = Course::all();
+            }
 
             $courseQuestionCounts = [];
             foreach ($courses as $course) {

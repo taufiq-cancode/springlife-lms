@@ -8,6 +8,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\ResourceController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\UsersController;
+use App\Http\Controllers\TutorController;
+use App\Http\Controllers\AdminController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -79,6 +82,25 @@ Route::middleware('auth')->group(function () {
     Route::prefix('certificates')->group(function(){
         Route::get('/', [CertificateController::class, 'index']) ->name('certificates.index');
         Route::get('/{userId}/{courseId}', [CertificateController::class, 'generateCertificate'])->name('certificate.generate');
+    });
+
+    Route::prefix('users')->group(function(){
+        Route::get('/', [UsersController::class, 'index']) ->name('users.index');
+        Route::post('/store', [UsersController::class, 'store']) ->name('user.store');
+        Route::put('/update/{userId}', [UsersController::class, 'update']) ->name('user.update');
+        Route::delete('/delete/{userId}', [UsersController::class, 'delete']) ->name('user.delete');
+    });
+
+    Route::prefix('tutor')->group(function(){
+        Route::post('/store', [TutorController::class, 'store']) ->name('tutor.store');
+        Route::put('/update/{tutorId}', [TutorController::class, 'update']) ->name('tutor.update');
+        Route::delete('/delete/{tutorId}', [TutorController::class, 'delete']) ->name('tutor.delete');
+    });
+
+    Route::prefix('admin')->group(function(){
+        Route::post('/store', [AdminController::class, 'store']) ->name('admin.store');
+        Route::put('/update/{adminId}', [AdminController::class, 'update']) ->name('admin.update');
+        Route::delete('/delete/{adminId}', [AdminController::class, 'delete']) ->name('admin.delete');
     });
 
     Route::post('/comments/{courseId}', [CommentController::class, 'store'])->name('comment.store');

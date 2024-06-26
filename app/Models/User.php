@@ -24,6 +24,8 @@ class User extends Authenticatable
         'date_of_birth',
         'phone',
         'email',
+        'role',
+        'status',
         'password',
     ];
 
@@ -55,5 +57,15 @@ class User extends Authenticatable
     public function hasCompletedCourse($course)
     {
         return $this->lessons()->where('course_id', $course->id)->count() == $course->lessons->count();
+    }
+
+    public function courses()
+    {
+        return $this->belongsTo(Course::class);
+    }
+
+    public function tutoredCourses() 
+    {
+        return $this->belongsToMany(Course::class, 'course_tutors', 'tutor_id', 'course_id');
     }
 }
