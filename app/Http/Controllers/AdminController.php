@@ -38,8 +38,8 @@ class AdminController extends Controller
                 $admin->password = Hash::make($temporaryPassword);
                 $admin->save();
 
-                // $token = Password::broker()->createToken($admin);
-                // $admin->sendPasswordResetNotification($token);
+                $token = Password::broker()->createToken($admin);
+                $admin->sendPasswordResetNotification($token);
 
             DB::commit();
 

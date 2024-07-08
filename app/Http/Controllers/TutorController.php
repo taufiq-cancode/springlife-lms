@@ -45,8 +45,8 @@ class TutorController extends Controller
 
                 $course->tutors()->sync([$tutor->id]);
 
-                // $token = Password::broker()->createToken($tutor);
-                // $tutor->sendPasswordResetNotification($token);
+                $token = Password::broker()->createToken($tutor);
+                $tutor->sendPasswordResetNotification($token);
             }
 
             DB::commit();
