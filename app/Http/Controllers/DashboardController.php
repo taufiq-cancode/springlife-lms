@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Report;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -28,11 +29,12 @@ class DashboardController extends Controller
             }
             $totalLessons = Lesson::count();
             $totalCourses = $courses->count();
+            $reports = Report::all();
     
             $user = Auth::user();
             $completedLessons = $user->lessons()->wherePivot('completed', true)->count();
             
-            return view('dashboard', compact('courses', 'totalLessons', 'completedLessons', 'totalCourses'));
+            return view('dashboard', compact('courses', 'totalLessons', 'completedLessons', 'totalCourses', 'reports'));
         } catch (\Exception $e) {
             Log::error('Error while accessing dashboard: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Error accessing dashboard');

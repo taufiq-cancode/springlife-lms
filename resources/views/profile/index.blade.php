@@ -11,18 +11,18 @@
         <div class="row">
           <div class="col-md-12">
 
-            <div class="card mb-4">
-              <h5 class="card-header">Profile Details</h5>
+            <div class="card">
+              <h5 class="card-header" style="margin-bottom: -30px">Profile Details</h5>
               <!-- Account -->
               <div class="card-body">
                 <div class="d-flex align-items-start align-items-sm-center gap-4">
 
-                  <img src="https://ui-avatars.com/api/?name={{ Illuminate\Support\Str::title(auth()->user()->firstname) }}+{{ Illuminate\Support\Str::title(auth()->user()->lastname) }}&background=a5a6ff&color=fff" alt="user-avatar" class="d-block rounded" height="100" width="100" id="uploadedAvatar">
+                  {{-- <img src="https://ui-avatars.com/api/?name={{ Illuminate\Support\Str::title(auth()->user()->firstname) }}+{{ Illuminate\Support\Str::title(auth()->user()->lastname) }}&background=a5a6ff&color=fff" alt="user-avatar" class="d-block rounded" height="100" width="100" id="uploadedAvatar"> --}}
 
-          <form id="formAccountSettings" method="POST" action="{{ route('profile.update') }}" >
-                    @csrf
+              <form id="formAccountSettings" method="POST" action="{{ route('profile.update') }}" >
+                        @csrf
 
-                  <div class="button-wrapper" style="margin-top: 20px;" >
+                  {{-- <div class="button-wrapper" style="margin-top: 20px;" >
                     <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
                       <span class="d-none d-sm-block">Upload new photo</span>
                       <i class="bx bx-upload d-block d-sm-none"></i>
@@ -32,10 +32,10 @@
                       <i class="bx bx-reset d-block d-sm-none"></i>
                       <span class="d-none d-sm-block">Reset</span>
                     </button>
-                  </div>
+                  </div> --}}
                 </div>
               </div>
-              <hr class="my-0">
+              {{-- <hr class="my-0"> --}}
               <div class="card-body">
 
                 

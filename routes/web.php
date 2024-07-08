@@ -11,6 +11,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\TutorController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ReportController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -29,8 +30,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/certificate', function () {
+    return view('certificate');
+});
+
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']) ->name('dashboard');
+    Route::post('/submit-quiz', [QuizController::class, 'submitQuiz'])->name('submit-quiz');
 
     Route::prefix('profile')->group(function(){
         Route::get('/', [ProfileController::class, 'index']) ->name('profile.index');
@@ -45,7 +51,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/edit/{courseId}', [CourseController::class, 'edit']) ->name('courses.edit');
         Route::put('/update/{courseId}', [CourseController::class, 'update']) ->name('courses.update');
         Route::delete('/delete/{courseId}', [CourseController::class, 'delete']) ->name('courses.delete');
-        Route::get('/{courseId}/download', [CourseController::class, 'download'])->name('courses.download');
+        Route::get('/download/{courseId}', [ResourceController::class, 'download'])->name('courses.download');
     });
 
     Route::prefix('lessons')->group(function(){
@@ -75,13 +81,14 @@ Route::middleware('auth')->group(function () {
         Route::post('/store/question/{courseId}', [QuizController::class, 'storeQuestion']) ->name('quiz.question.store');
         Route::post('/upload/{courseId}', [QuizController::class, 'uploadQuestions'])->name('quiz.question.upload');
         Route::post('/update/question/{questionId}', [QuizController::class, 'updateQuestion']) ->name('quiz.question.update');
-
         Route::delete('/delete/question/{questionId}', [QuizController::class, 'deleteQuestion']) ->name('quiz.question.delete');
     });
     
     Route::prefix('certificates')->group(function(){
         Route::get('/', [CertificateController::class, 'index']) ->name('certificates.index');
-        Route::get('/{userId}/{courseId}', [CertificateController::class, 'generateCertificate'])->name('certificate.generate');
+        // Route::get('/{userId}/{courseId}', [CertificateController::class, 'generateCertificate'])->name('certificate.generate');
+        Route::get('/{userId}/{courseId}', [CertificateController::class, 'showCertificate'])->name('certificate.show');
+
     });
 
     Route::prefix('users')->group(function(){
@@ -99,18 +106,23 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('admin')->group(function(){
         Route::post('/store', [AdminController::class, 'store']) ->name('admin.store');
-        Route::put('/update/{adminId}', [AdminController::class, 'update']) ->name('admin.update');
-        Route::delete('/delete/{adminId}', [AdminController::class, 'delete']) ->name('admin.delete');
+        Route::put('/update/{adminId}', [UsersController::class, 'update']) ->name('admin.update');
+        Route::delete('/delete/{adminId}', [UsersController::class, 'delete']) ->name('admin.delete');
     });
 
     Route::post('/comments/{courseId}', [CommentController::class, 'store'])->name('comment.store');
     Route::post('/reply/{courseId}', [CommentController::class, 'store'])->name('reply.store');
 
+    Route::prefix('reports')->group(function(){
+        Route::get('/', [ReportController::class, 'index']) ->name('reports.index');
+        Route::get('/create', [ReportController::class, 'create']) ->name('reports.create');
+        Route::post('/store/mission', [ReportController::class, 'mission']) ->name('report.mission');
+        Route::post('/store/chapter', [ReportController::class, 'chapter']) ->name('report.chapter');
+        Route::post('/store/zonal', [ReportController::class, 'zonal']) ->name('report.zonal');
+        Route::post('/store/regional', [ReportController::class, 'regional']) ->name('report.regional');
+    });
+
 });
-
-
-
-
 
 // Route::middleware('auth')->group(function () {
 //     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

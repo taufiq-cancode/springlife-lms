@@ -47,7 +47,7 @@
                                                 <div class="progress mb-4" style="height: 8px">
                                                     <div class="progress-bar w-{{ round($course->getUserProgress(Auth::user())['progressPercentage']) }}" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                                                 </div>
-                                                <a href="{{ route('certificate.generate', ['userId' => $user->id, 'courseId' => $course->id]) }}" style="width: 100%;" class="btn btn-outline-primary">Get Certificate <i class='bx bx-download'></i></a>
+                                                <a href="{{ route('certificate.show', ['userId' => $user->id, 'courseId' => $course->id]) }}" style="width: 100%;" class="btn btn-outline-primary" target="_blank">Get Certificate <i class='bx bx-download'></i></a>
                     
                                             </div>
                     

@@ -55,7 +55,7 @@ class CourseController extends Controller
             $request->validate([
                 'title' => 'required|string|max:255',
                 'description' => 'required|string',
-                'file' => 'required|mimes:pdf|max:20480',
+                'file' => 'nullable|mimes:pdf|max:20480',
                 'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'tutor_id' => 'nullable|exists:users,id',
             ]);
@@ -175,10 +175,9 @@ class CourseController extends Controller
     public function update(Request $request, $courseId) {
         try {
             $user = auth()->user();
-    
             $course = Course::with('tutors')->findOrFail($courseId);
     
-            if ($user->role !== 'admin' && !$course->tutors->contains($user)) {
+            if ($user->role !== 'admin' && !$course->tutors->contains($user->id)) {
                 return redirect()->back()->with('error', 'Unauthorized access');
             }
     
@@ -197,25 +196,27 @@ class CourseController extends Controller
     
             $request->validate($rules);
     
+            // Logging file information
             if ($request->hasFile('file')) {
-                Storage::disk('public')->delete('course_files/' . $course->file);
-    
                 $file = $request->file('file');
+              
+                if ($course->file) {
+                    Storage::disk('public')->delete('course_files/' . $course->file);
+                }
+    
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $file->storeAs('course_files', $fileName, 'public');
-    
                 $course->file = $fileName;
-    
-                // $this->getEmbeddings($fileName, $course);
             }
     
             if ($request->hasFile('cover_image')) {
-                Storage::disk('public')->delete('course_images/' . $course->cover_image);
+                if ($course->cover_image) {
+                    Storage::disk('public')->delete('course_images/' . $course->cover_image);
+                }
     
                 $cover_image = $request->file('cover_image');
                 $imageName = time() . '_' . $cover_image->getClientOriginalName();
                 $cover_image->storeAs('course_images', $imageName, 'public');
-    
                 $course->cover_image = $imageName;
             }
     
@@ -228,21 +229,18 @@ class CourseController extends Controller
             }
     
             DB::commit();
-    
-            return redirect()->back()->with('success', 'Course updated successfully!');
+            return redirect()->route('courses.index')->with('success', 'Course updated successfully!');
     
         } catch (ValidationException $e) {
             DB::rollBack();
             Log::error('Error while updating course: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Error while updating course: ' . $e->getMessage());
-    
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error while updating course: ' . $e->getMessage());
-            return redirect()->back()->with('error', $e->getMessage());
+            return redirect()->back()->with('error', 'An unexpected error occurred. Please try again.');
         }
     }
-    
     public function delete($courseId){
         try {
             $course = Course::findOrFail($courseId);

@@ -30,35 +30,31 @@ class ResourceController extends Controller
             return view('resources.index', compact('courses'));
 
         }catch (\Exception $e){
-
             Log::error('Error while retrieving resources : '. $e->getMessage());
             return redirect()->back()->with('error', 'Error while retrieving resources');
-
         }   
     }
 
-    public function download($courseId){
-        try{
+    public function download($courseId)
+    {
+        try {
             $course = Course::findOrFail($courseId);
-
             $filePath = public_path("storage/course_files/{$course->file}");
-
+    
             if (file_exists($filePath)) {
-                $filename = $course->title . '.pdf';
-
                 $headers = [
                     'Content-Type' => 'application/pdf',
                 ];
-
-                return response()->download($filePath, $filename, $headers);
+    
+                return response()->file($filePath, $headers);
             } else {
                 return redirect()->route('courses.index')->with('error', 'PDF file not found.');
             }
-
-        }catch(\Exception $e){
-            Log::error('Error while downloading file: '. $e->getMessage());
+    
+        } catch (\Exception $e) {
+            Log::error('Error while fetching file: ' . $e->getMessage());
             return redirect()->back()->with('error', $e->getMessage());
         }
-        
     }
+    
 }

@@ -33,12 +33,13 @@
               <a class="dropdown-item" href="{{ route('profile.index') }}">
                 <div class="d-flex">
                   <div class="flex-shrink-0 me-3">
-                    <div class="avatar avatar-online">
+                    <div class="avatar avatar-online" style="margin-top: 13px;">
                       <img src="https://ui-avatars.com/api/?name={{ Illuminate\Support\Str::title(auth()->user()->firstname) }}+{{ Illuminate\Support\Str::title(auth()->user()->lastname) }}&background=a5a6ff&color=fff" alt class="w-px-40 h-auto rounded-circle" />
                     </div>
                   </div>
                   <div class="flex-grow-1" style="margin-top: 10px;">
                     <span class="fw-semibold d-block">{{ Illuminate\Support\Str::title(auth()->user()->firstname) }} {{ Illuminate\Support\Str::title(auth()->user()->lastname) }}</span>
+                    <span>{{ Illuminate\Support\Str::title(auth()->user()->role) }}</span>
                   </div>
                 </div>
               </a>

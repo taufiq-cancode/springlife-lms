@@ -5,7 +5,7 @@
 
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand demo">
-      <a href="index.html" class="app-brand-link">
+      <a href="{{ route('dashboard') }}" class="app-brand-link">
         <span class="app-brand-logo demo">
           <svg
             width="25"
@@ -75,60 +75,71 @@
       <!-- Dashboard -->
       <li class="menu-item {{ ($route == 'dashboard')?'active':'' }}">
         <a href="{{ route('dashboard') }}" class="menu-link">
-          <i class="menu-icon tf-icons bx bx-home-circle"></i>
+          <i class="menu-icon fa-solid fa-house"></i>
           <div data-i18n="Analytics">Dashboard</div>
         </a>
       </li>
 
-      <li class="menu-item {{ ($prefix == '/courses' || $prefix == '/lessons' )?'active':'' }}">
-        <a href="{{ route('courses.index') }}" class="menu-link">
-          <i class='bx bxs-videos menu-icon'></i></i>
-          <div data-i18n="Layouts">Courses</div>
-        </a>
-      </li>
+        <li class="menu-item {{ ($prefix == '/courses' || $prefix == '/lessons' )?'active':'' }}">
+          <a href="{{ route('courses.index') }}" class="menu-link">
+            <i class="fa-brands fa-youtube menu-icon"></i>
+            <div data-i18n="Layouts">Courses</div>
+          </a>
+        </li>
 
-      <li class="menu-item {{ ($prefix == '/resources')?'active':'' }}">
-        <a href="{{ route('resources.index') }}" class="menu-link">
-          <i class='bx bx-book-alt menu-icon'></i>
-          <div data-i18n="Layouts">Resources</div>
-        </a>
-      </li>
+        <li class="menu-item {{ ($prefix == '/resources')?'active':'' }}">
+          <a href="{{ route('resources.index') }}" class="menu-link">
+            <i class="fa-solid fa-book menu-icon"></i>
+            <div data-i18n="Layouts">Resources</div>
+          </a>
+        </li>
 
-      <li class="menu-item {{ ($prefix == '/quiz')?'active':'' }}">
-        <a href="{{ route('quiz.index') }}" class="menu-link">
-          <i class='bx bx-question-mark menu-icon'></i>
-          <div data-i18n="Layouts">Quiz</div>
-        </a>
-      </li>
+      @if(auth()->check() && auth()->user()->role === 'user' || auth()->user()->role === 'tutor' )
+        <li class="menu-item {{ ($prefix == '/quiz' || $route == 'submit-quiz')?'active':'' }}">
+          <a href="{{ route('quiz.index') }}" class="menu-link">
+            <i class="fa-solid fa-circle-question menu-icon"></i>
+            <div data-i18n="Layouts">Quiz</div>
+          </a>
+        </li>
+      @endif
 
-      <li class="menu-item {{ ($prefix == '/certificates')?'active':'' }}">
-        <a href="{{ route('certificates.index') }}" class="menu-link">
-          <i class='bx bx-certification menu-icon'></i>
-          <div data-i18n="Layouts">Certificates</div>
-        </a>
-      </li>
+      @if(auth()->check() && auth()->user()->role === 'user')
+        <li class="menu-item {{ ($prefix == '/certificates')?'active':'' }}">
+          <a href="{{ route('certificates.index') }}" class="menu-link">
+            <i class="fa-solid fa-certificate menu-icon"></i>
+            <div data-i18n="Layouts">Certificates</div>
+          </a>
+        </li>
+      @endif
+
+      {{-- @if(auth()->check() && auth()->user()->role !== 'user' && auth()->user()->role !== 'tutor')
+        <li class="menu-item {{ ($prefix == '/reports')?'active':'' }}">
+          <a href="{{ route('reports.index') }}" class="menu-link">
+            <i class='menu-icon fa-solid fa-file-lines'></i></i>
+            <div data-i18n="Layouts">Reports</div>
+          </a>
+        </li>
+      @endif --}}
 
       @if(auth()->check() && auth()->user()->role === 'admin')
         <li class="menu-item {{ ($prefix == '/users')?'active':'' }}">
           <a href="{{ route('users.index') }}" class="menu-link">
-            <i class='bx bx-certification menu-icon'></i>
+            <i class="fa-solid fa-user menu-icon"></i>
             <div data-i18n="Layouts">Users</div>
           </a>
         </li>
       @endif
 
-      <li class="menu-header small text-uppercase"><span class="menu-header-text" data-i18n="Components">User</span></li>
-
       <li class="menu-item {{ ($prefix == '/profile')?'active':'' }}">
         <a href="{{ route('profile.index') }}" class="menu-link">
-          <i class='bx bx-user-circle menu-icon'></i>
+          <i class="fa-solid fa-id-badge menu-icon"></i>
           <div data-i18n="Layouts">Profile</div>
         </a>
       </li>
 
       <li class="menu-item">
         <a href="{{ route('logout') }}" class="menu-link" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
-          <i class='bx bx-user-x menu-icon'></i>
+          <i class="fa-solid fa-right-from-bracket menu-icon"></i>
           <div data-i18n="Layouts">Logout</div>
         </a>
       </li>
@@ -136,8 +147,5 @@
       <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
         @csrf
       </form>
-      
-
-     
     </ul>
   </aside>

@@ -5,16 +5,17 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Question;
-
+use App\Models\QuizResult;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 
 class QuizController extends Controller
 {
-    public function index(){
+    public function index()
+    {
         try{
-            
             $user = auth()->user();
             $courses = [];
 
@@ -39,20 +40,15 @@ class QuizController extends Controller
             return redirect()->back()->with('error', 'Error while retrieving quiz');
         }   
     }
+    public function showQuestions($courseId)
+    {
+        $course = Course::findOrFail($courseId);
+        $questions = Question::where('course_id', $courseId)->get();
 
-    public function showQuestions($courseId){
-        try{
-
-            
-            return view('quiz', compact('questions'));
-
-        }catch(\Exception $e){
-
-        }
-        
+        return view('quiz', compact('course', 'questions'));
     }
-
-    public function view($courseId){
+    public function view($courseId)
+    {
         try{ 
             $user = auth()->user();
             $course = Course::findOrFail($courseId);
@@ -70,18 +66,43 @@ class QuizController extends Controller
             return redirect()->back()->with('error', 'Error while retrieving quiz');
         }   
     }
+    public function submitQuiz(Request $request)
+    {
+        $courseId = $request->input('course_id');
+        $answers = $request->input('answers');
+        $totalQuestions = count($answers);
+        $score = 0;
+
+        foreach ($answers as $answer) {
+            $answer = json_decode($answer, true);
+            $question = Question::find($answer['question_id']);
+            if ($question->correct_option == $answer['selected_option']) {
+                $score++;
+            }
+        }
+
+        $percentage = ($score / $totalQuestions) * 100;
+        $status = $percentage >= 70 ? 'success' : 'error';
+
+        QuizResult::create([
+            'user_id' => Auth::id(),
+            'course_id' => $courseId,
+            'score' => $percentage
+        ]);
+
+        return view('quiz.quiz-result', compact('percentage', 'status'));
+    }
 
     public function adminView($courseId){
         try{ 
             $user = auth()->user();
 
-            if ($user->role !== 'admin'){
+            if ($user->role === 'user'){
                 return redirect()->back()->with('error', 'Unauthorized access');
             }
 
             $course = Course::findOrFail($courseId);
             $questions = Question::where('course_id', $course->id)->get();
-
 
             return view('quiz.admin-view', compact('course','questions'));
 
@@ -94,7 +115,7 @@ class QuizController extends Controller
         try{
             $user = auth()->user();  
 
-            if ($user->role !== 'admin'){
+            if ($user->role === 'user'){
                 return redirect()->back()->with('error', 'Unauthorized access');
             }
 
@@ -126,21 +147,17 @@ class QuizController extends Controller
 
                 return redirect()->back()->with('success', 'Questions uploaded successfully.');
             }
-
             return redirect()->back()->with('error', 'Failed to upload questions. Please try again.');
-
-
         }catch(\Exception $e){
             Log::error('Error while uploading quiz questions: '. $e->getMessage());
             return redirect()->back()->with('error', 'Error while uploading quiz questions');
         }
     }
-
     public function storeQuestion(Request $request, $courseId){
         try{
             $user = auth()->user();  
 
-            if ($user->role !== 'admin'){
+            if ($user->role === 'user'){
                 return redirect()->back()->with('error', 'Unauthorized access');
             }
 
@@ -183,7 +200,7 @@ class QuizController extends Controller
 
             $user = auth()->user();  
 
-            if ($user->role !== 'admin'){
+            if ($user->role === 'user'){
                 return redirect()->back()->with('error', 'Unauthorized access');
             }
 
@@ -207,11 +224,9 @@ class QuizController extends Controller
             return redirect()->back()->with('error', 'Error while updating quiz question');
         }
     }
-
     public function deleteQuestion($questionId){
         try {
             $question = Question::findOrFail($questionId);
-
             $question->delete();
 
             return redirect()->back()->with('success', 'Question deleted successfully!');

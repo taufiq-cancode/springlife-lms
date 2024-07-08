@@ -56,12 +56,16 @@ class User extends Authenticatable
 
     public function hasCompletedCourse($course)
     {
+        if ($course->lessons->isEmpty()) {
+            return false;
+        }
+    
         return $this->lessons()->where('course_id', $course->id)->count() == $course->lessons->count();
     }
 
     public function courses()
     {
-        return $this->belongsTo(Course::class);
+        return $this->belongsToMany(Course::class, 'course_tutors', 'tutor_id', 'course_id');
     }
 
     public function tutoredCourses() 

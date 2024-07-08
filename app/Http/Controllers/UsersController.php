@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Validation\Rule;
 use App\Models\User;
 use Illuminate\Validation\ValidationException;
 
@@ -20,16 +20,56 @@ class UsersController extends Controller
     public function index()
     {
         try {
-            $users = User::all();
+            $users = User::where('role', 'user')->get();
             $tutors = User::where('role', 'tutor')->get();
             $admins = User::where('role', 'admin')->get();
-            $courses = Course::all();
+            $courses = Course::with('tutors')->get();
 
             return view('users.index', compact('users', 'tutors', 'admins', 'courses'));
 
         } catch(\Exception $e) {
-            Log::error('Error while creating tutor: '. $e->getMessage());
-            return redirect()->back()->with('error', 'Error while creating tutor');
+            Log::error('Error while fetching data: '. $e->getMessage());
+            return redirect()->back()->with('error', 'Error while fetching data');
+        }
+    }
+    public function store(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+                $request->validate([
+                    'firstname' => 'required|string',
+                    'lastname' => 'required|string',
+                    'email' => 'required|email|unique:users,email',
+                    'role' => 'required|string|in:admin,chapter_coordinator,zonal_coordinator,regional_coordinator,national_coordinator',
+                ]);
+                
+                $temporaryPassword = Str::random(8);
+
+                $user = new User();
+                $user->firstname = $request->firstname;
+                $user->lastname = $request->lastname;
+                $user->email = $request->email;
+                $user->role = $request->role;
+                $user->status = 0;
+                $user->password = Hash::make($temporaryPassword);
+                $user->save();
+
+                $token = Password::broker()->createToken($user);
+                $user->sendPasswordResetNotification($token);
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'User created successfully.');
+
+        } catch(ValidationException $e) {
+            DB::rollback();
+                Log::error('Error while creating admin: '. $e->getMessage());
+                return redirect()->back()->with('error', 'Error while creating admin: '. $e->getMessage());
+        
+        } catch(\Exception $e) {
+            DB::rollback();
+                Log::error('Error while creating admin: '. $e->getMessage());
+                return redirect()->back()->with('error', 'Error while creating admin');
         }
     }
     public function update(Request $request, $userId)
@@ -39,11 +79,13 @@ class UsersController extends Controller
                 $request->validate([
                     'firstname' => 'nullable|string',
                     'lastname' => 'nullable|string',
-                    'email' => 'nullable|email|unique:users,email',
+                    'email' => [
+                        'nullable',
+                        'email',
+                        Rule::unique('users')->ignore($userId),
+                    ],
                     'gender' => 'nullable',
                     'date_of_birth' => 'nullable|date',
-
-
                 ]);
 
                 $user = User::findOrFail($userId);

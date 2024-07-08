@@ -3,75 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Certificate</title>
+    <title>Certificate of Achievement</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Times New Roman', Times, serif;
             margin: 0;
             padding: 0;
             background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
         .certificate-container {
-            max-width: 800px;
-            margin: 50px auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
+            position: relative;
+            width: 1122px;
+            height: 794px;
+            background: url('{{ asset('assets/img/certificate.jpg') }}') no-repeat center center;
+            background-size: cover;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        .certificate-header {
+        .certificate-text {
+            position: absolute;
+            width: 100%;
             text-align: center;
-            margin-bottom: 20px;
+            color: #000;
         }
 
-        .certificate-header h1 {
-            font-size: 32px;
-            color: #333;
+        .certificate-title {
+            top: 150px;
+            font-size: 36px;
+            font-weight: bold;
         }
 
-        .certificate-details {
-            margin-bottom: 20px;
+        .certificate-subtitle {
+            top: 220px;
+            font-size: 24px;
         }
 
-        .certificate-details p {
-            font-size: 18px;
-            color: #555;
-            margin: 5px 0;
+        .certificate-name {
+            top: 350px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .certificate-body {
+            top: 310px;
+            font-size: 20px;
+            line-height: 1.6;
+            padding: 0 100px;
         }
 
         .certificate-signature {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .certificate-signature p {
+            position: absolute;
+            bottom: 220px;
+            left: 315px;
             font-size: 18px;
-            color: #555;
-            margin: 5px 0;
+            text-align: left;
         }
 
-        .signature-img {
-            width: 200px;
+        .certificate-date {
+            position: absolute;
+            bottom: 220px;
+            right: 320px;
+            font-size: 18px;
+            text-align: right;
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
 </head>
 <body>
-    <div class="certificate-container">
-        <div class="certificate-header">
-            <h1>Certificate of Completion</h1>
+    <div class="certificate-container" id="certificate">
+        <div class="certificate-text certificate-name">
+            {{ $user->firstname }} {{ $user->lastname }}
         </div>
-        <div class="certificate-details">
-            <p>This is to certify that <strong>{{ $user->firstname }} {{ $user->lastname }}</strong> has successfully completed the course:</p>
-            <p><strong>{{ $course->title }}</strong></p>
-            <p>Date of completion: {{ now()->format('Y-m-d') }}</p>
+        <div class="certificate-date">
+            {{ now()->format('F d, Y') }}
         </div>
-        {{-- <div class="certificate-signature">
-            <p>Signature:</p>
-            <img src="{{ asset('path/to/signature.png') }}" alt="Signature" class="signature-img">
-            <p>John Doe<br>Course Instructor</p>
-        </div> --}}
     </div>
+
+    <script>
+        function downloadPDF() {
+            var element = document.querySelector('.certificate-container');
+            var opt = {
+                margin: [0, 0, 0, 0], // Set all margins to 0 to remove white space
+                filename: '{{ $user->firstname }}_certificate.pdf',
+                image: { type: 'jpeg', quality: 1.0 }, // Increase quality
+                html2canvas: { scale: 3 }, // Increase scale for higher resolution
+                jsPDF: { unit: 'px', format: [1122, 794], orientation: 'landscape' }
+            };
+            html2pdf().from(element).set(opt).save();
+        }
+
+        window.onload = downloadPDF;
+    </script>
 </body>
 </html>

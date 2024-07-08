@@ -28,134 +28,133 @@
 
         <div class="row">
             <div class="col-lg-12">
+                @if($questions->isEmpty())
+                    <div class="alert alert-warning me-1" style="margin-bottom: -15px;" role="alert">
+                        No questions uploaded yet.
+                    </div>
+                @else
+                    @foreach($questions as $question)
+                        <div id="accordionIcon" class="accordion mt-3 accordion-with-arrow">
+                            <div class="accordion-item card">
+                                <h2 class="accordion-header text-body d-flex justify-content-between" id="accordionIcon-{{ $question->id }}">
+                                    <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#accordionIcon-{{ $question->id }}" aria-controls="accordionIcon-{{ $question->id }}">
+                                        Question {{ $loop->iteration }}: {{ $question->question_text }}
+                                    </button>
+                                </h2>
+                        
+                                <div id="accordionIcon-{{ $question->id }}" class="accordion-collapse collapse" data-bs-parent="#accordionIcon">
+                                    <div class="card-body">
+                                        <div class="row gy-4 mb-4">
 
-                @foreach($questions as $question)
-
-                    <div id="accordionIcon" class="accordion mt-3 accordion-with-arrow">
-                        <div class="accordion-item card">
-                            <h2 class="accordion-header text-body d-flex justify-content-between" id="accordionIcon-{{ $question->id }}">
-                                <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#accordionIcon-{{ $question->id }}" aria-controls="accordionIcon-{{ $question->id }}">
-                                    Question {{ $loop->iteration }}: {{ $question->question_text }}
-                                </button>
-                            </h2>
-                    
-                            <div id="accordionIcon-{{ $question->id }}" class="accordion-collapse collapse" data-bs-parent="#accordionIcon">
-                                <div class="card-body">
-                                    <div class="row gy-4 mb-4">
-
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="option1" id="q1" value="option1">
-                                                <label class="form-check-label" for="q1">{{ $question->option1 }}</label>
-                                            </div>
-
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="option1" id="q1" value="option1">
-                                                <label class="form-check-label" for="q1">{{ $question->option2 }}</label>
-                                            </div>
-
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="option1" id="q1" value="option1">
-                                                <label class="form-check-label" for="q1">{{ $question->option3 }}</label>
-                                            </div>
-
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="option1" id="q1" value="option1">
-                                                <label class="form-check-label" for="q1">{{ $question->option4 }}</label>
-                                            </div>
-
-                                        <hr style="margin-bottom:-10px">
-
-                                        <label style="margin-bottom:-10px"><b>Correct Option</b></label>
-
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" checked name="correct_option" id="q{{ $question->id }}_correct_option" value="correct_option">
-                                            <label class="form-check-label" for="q{{ $question->id }}_correct_option">{{ $question->{$question->correct_option} }}</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-footer d-flex flex- gap-3" style="margin-top:-45px">
-
-                                    <button type="button" class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#modalEditQuestion_{{ $question->id }}">Edit Question</button>
-                                    <div class="modal fade" id="modalEditQuestion_{{ $question->id }}" tabindex="-1" style="display: none;" aria-hidden="true">
-                                        <div class="modal-dialog modal-lg" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel3">Edit Question</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="option1" id="q1" value="option1">
+                                                    <label class="form-check-label" for="q1">{{ $question->option1 }}</label>
                                                 </div>
-                                                <div class="modal-body">
 
-                                                    <form method="POST" action="{{ route('quiz.question.update', ['questionId' => $question->id]) }}" enctype="multipart/form-data">
-                                                        @csrf
-
-                                                        <div class="row">
-                                                            <div class="col mb-3">
-                                                                <label for="nameLarge" class="form-label">Question text</label>
-                                                                <input type="text" id="nameLarge" class="form-control" name="question_text" value="{{ $question->question_text }}">
-                                                            </div>
-                                                        </div>
-                                    
-                                                        <div class="row g-2 mb-3">
-                                                            <div class="col mb-0">
-                                                                <label for="emailLarge" class="form-label">Option 1</label>
-                                                                <input type="text" class="form-control" name="option1" value="{{ $question->option1 }}">
-                                                            </div>
-                                                            <div class="col mb-0">
-                                                                <label for="dobLarge" class="form-label">Option 2</label>
-                                                                <input type="text" class="form-control" name="option2" value="{{ $question->option2 }}">
-                                                            </div>
-                                                        </div>
-                                    
-                                                        <div class="row g-2 mb-3">
-                                                            <div class="col mb-0">
-                                                                <label for="emailLarge" class="form-label">Option 3</label>
-                                                                <input type="text" class="form-control" name="option3" value="{{ $question->option3 }}">
-                                                            </div>
-                                                            <div class="col mb-0">
-                                                                <label for="dobLarge" class="form-label">Option 4</label>
-                                                                <input type="text" class="form-control" name="option4" value="{{ $question->option4 }}">
-                                                            </div>
-                                                        </div>
-                                    
-                                                        <div class="row g-2 mb-3">
-                                                            <div class="col-6 mb-0">
-                                                                <label for="emailLarge" class="form-label">Correct Option</label>
-                                                                <select class="form-select" id="exampleFormControlSelect1" aria-label="Default select example" name="correct_option">
-                                                                    <option value="option1" {{ $question->correct_option == 'option1' ? 'selected' : '' }}>Option 1</option>
-                                                                    <option value="option2" {{ $question->correct_option == 'option2' ? 'selected' : '' }}>Option 2</option>
-                                                                    <option value="option3" {{ $question->correct_option == 'option3' ? 'selected' : '' }}>Option 3</option>
-                                                                    <option value="option4" {{ $question->correct_option == 'option4' ? 'selected' : '' }}>Option 4</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                    
-                                                        <button type="submit" class="btn btn-primary">Update Question</button>
-                                                    </form>
-                                
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="option1" id="q1" value="option1">
+                                                    <label class="form-check-label" for="q1">{{ $question->option2 }}</label>
                                                 </div>
-                                                
+
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="option1" id="q1" value="option1">
+                                                    <label class="form-check-label" for="q1">{{ $question->option3 }}</label>
+                                                </div>
+
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="option1" id="q1" value="option1">
+                                                    <label class="form-check-label" for="q1">{{ $question->option4 }}</label>
+                                                </div>
+
+                                            <hr style="margin-bottom:-10px">
+
+                                            <label style="margin-bottom:-10px"><b>Correct Option</b></label>
+
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" checked name="correct_option" id="q{{ $question->id }}_correct_option" value="correct_option">
+                                                <label class="form-check-label" for="q{{ $question->id }}_correct_option">{{ $question->{$question->correct_option} }}</label>
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="card-footer d-flex flex- gap-3" style="margin-top:-45px">
 
-                                    <form method="POST" action="{{ route('quiz.question.delete', ['questionId' => $question->id]) }}" style="margin-top:16px">
-                                        @csrf
-                                        @method('DELETE')
+                                        <button type="button" class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#modalEditQuestion_{{ $question->id }}">Edit Question</button>
+                                        <div class="modal fade" id="modalEditQuestion_{{ $question->id }}" tabindex="-1" style="display: none;" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel3">Edit Question</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+
+                                                        <form method="POST" action="{{ route('quiz.question.update', ['questionId' => $question->id]) }}" enctype="multipart/form-data">
+                                                            @csrf
+
+                                                            <div class="row">
+                                                                <div class="col mb-3">
+                                                                    <label for="nameLarge" class="form-label">Question text</label>
+                                                                    <input type="text" id="nameLarge" class="form-control" name="question_text" value="{{ $question->question_text }}">
+                                                                </div>
+                                                            </div>
+                                        
+                                                            <div class="row g-2 mb-3">
+                                                                <div class="col mb-0">
+                                                                    <label for="emailLarge" class="form-label">Option 1</label>
+                                                                    <input type="text" class="form-control" name="option1" value="{{ $question->option1 }}">
+                                                                </div>
+                                                                <div class="col mb-0">
+                                                                    <label for="dobLarge" class="form-label">Option 2</label>
+                                                                    <input type="text" class="form-control" name="option2" value="{{ $question->option2 }}">
+                                                                </div>
+                                                            </div>
+                                        
+                                                            <div class="row g-2 mb-3">
+                                                                <div class="col mb-0">
+                                                                    <label for="emailLarge" class="form-label">Option 3</label>
+                                                                    <input type="text" class="form-control" name="option3" value="{{ $question->option3 }}">
+                                                                </div>
+                                                                <div class="col mb-0">
+                                                                    <label for="dobLarge" class="form-label">Option 4</label>
+                                                                    <input type="text" class="form-control" name="option4" value="{{ $question->option4 }}">
+                                                                </div>
+                                                            </div>
+                                        
+                                                            <div class="row g-2 mb-3">
+                                                                <div class="col-6 mb-0">
+                                                                    <label for="emailLarge" class="form-label">Correct Option</label>
+                                                                    <select class="form-select" id="exampleFormControlSelect1" aria-label="Default select example" name="correct_option">
+                                                                        <option value="option1" {{ $question->correct_option == 'option1' ? 'selected' : '' }}>Option 1</option>
+                                                                        <option value="option2" {{ $question->correct_option == 'option2' ? 'selected' : '' }}>Option 2</option>
+                                                                        <option value="option3" {{ $question->correct_option == 'option3' ? 'selected' : '' }}>Option 3</option>
+                                                                        <option value="option4" {{ $question->correct_option == 'option4' ? 'selected' : '' }}>Option 4</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                        
+                                                            <button type="submit" class="btn btn-primary">Update Question</button>
+                                                        </form>
                                     
-                                        <button type="submit" onclick="return confirm('Are you sure you want to delete this question?')" style="width: 100%;" class="btn btn-outline-danger">Delete Question</button>
-                                    </form> 
+                                                    </div>
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <form method="POST" action="{{ route('quiz.question.delete', ['questionId' => $question->id]) }}" style="margin-top:16px">
+                                            @csrf
+                                            @method('DELETE')
+                                        
+                                            <button type="submit" onclick="return confirm('Are you sure you want to delete this question?')" style="width: 100%;" class="btn btn-outline-danger">Delete Question</button>
+                                        </form> 
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
-
-                
-
-
+                    @endforeach
+                @endif
             </div>
         </div>
-
     </div>
     <!-- / Content -->
 

@@ -8,9 +8,7 @@
     .card.accordion-item {
         border: 1px solid;
     }
-
 </style>
-
 
     <div class="content-wrapper">
     <!-- Content -->
@@ -164,7 +162,7 @@
 
                                 <h5>Course Resource</h5>
                                 <div class="list-group list-group-flush">
-                                    <a href="{{ route('courses.download', ['courseId' => $course->id]) }}" class="list-group-item list-group-item-action">
+                                    <a href="{{ route('courses.download', ['courseId' => $course->id]) }}" target="_blank" class="list-group-item list-group-item-action">
                                         <i class='bx bxs-file-pdf'></i> {{ $course->title }}
                                         <i class='bx bx-download' style="float:right; color:cornflowerblue"></i>
                                     </a>
@@ -364,29 +362,29 @@
                     
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="nameWithTitle" class="form-label">Course Title</label>
-                                <input type="text" id="nameWithTitle" name="title" value="{{ $course->title }}" class="form-control" placeholder="Enter Course Title">
+                                <label for="courseTitle" class="form-label">Course Title</label>
+                                <input type="text" id="courseTitle" name="title" value="{{ $course->title }}" class="form-control" placeholder="Enter Course Title" required>
                             </div>
                         </div>
                     
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="nameWithTitle" class="form-label">Course Description</label>
-                                <textarea class="form-control" id="exampleFormControlTextarea1" name="description" rows="3">{{ $course->description }}</textarea>
+                                <label for="courseDescription" class="form-label">Course Description</label>
+                                <textarea class="form-control" id="courseDescription" name="description" rows="3" required>{{ $course->description }}</textarea>
                             </div>
                         </div>
                     
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="nameWithTitle" class="form-label">Course Resource Files</label>
-                                <input class="form-control" type="file" id="formFileMultiple" name="file" accept=".pdf">
+                                <label for="courseFile" class="form-label">Course Resource Files</label>
+                                <input class="form-control" type="file" id="courseFile" name="file" accept=".pdf">
                             </div>
                         </div>
                     
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="nameWithTitle" class="form-label">Cover Image</label>
-                                <input class="form-control" type="file" name="cover_image" id="formFileMultiple" accept=".png, .jpg, .jpeg">
+                                <label for="coverImage" class="form-label">Cover Image</label>
+                                <input class="form-control" type="file" name="cover_image" id="coverImage" accept=".png, .jpg, .jpeg">
                             </div>
                         </div>
                     
@@ -407,9 +405,9 @@
                     
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Update course</button>
+                            <button type="submit" class="btn btn-primary">Update Course</button>
                         </div>
-                    </form>                    
+                    </form>           
                 </div>
             </div>
         </div>

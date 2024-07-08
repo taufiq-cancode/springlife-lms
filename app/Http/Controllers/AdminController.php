@@ -13,13 +13,14 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
     public function store(Request $request)
     {
         try {
-            // DB::beginTransaction();
+            DB::beginTransaction();
                 $request->validate([
                     'firstname' => 'required|string',
                     'lastname' => 'required|string',
@@ -40,17 +41,17 @@ class AdminController extends Controller
                 // $token = Password::broker()->createToken($admin);
                 // $admin->sendPasswordResetNotification($token);
 
-            // DB::commit();
+            DB::commit();
 
             return redirect()->back()->with('success', 'Admin created successfully.');
 
         } catch(ValidationException $e) {
-            // DB::rollback();
+            DB::rollback();
                 Log::error('Error while creating admin: '. $e->getMessage());
                 return redirect()->back()->with('error', 'Error while creating admin: '. $e->getMessage());
         
         } catch(\Exception $e) {
-            // DB::rollback();
+            DB::rollback();
                 Log::error('Error while creating admin: '. $e->getMessage());
                 return redirect()->back()->with('error', 'Error while creating admin');
         }
@@ -63,7 +64,11 @@ class AdminController extends Controller
                 $request->validate([
                     'firstname' => 'nullable|string',
                     'lastname' => 'nullable|string',
-                    'email' => 'nullable|email|unique:users,email',
+                    'email' => [
+                        'nullable',
+                        'email',
+                        Rule::unique('users')->ignore($adminId),
+                    ],
                 ]);
                 
                 $admin = User::findOrFail($adminId);
@@ -81,12 +86,12 @@ class AdminController extends Controller
         } catch(ValidationException $e){
             DB::rollback();
             Log::error('Error while creating admin: '. $e->getMessage());
-            return redirect()->back()->with('error', 'Error while creating admin: '. $e->getMessage());
+            return redirect()->back()->with('error', 'Error while updating admin: '. $e->getMessage());
     
         } catch(\Exception $e) {
             DB::rollback();
             Log::error('Error while creating admin: '. $e->getMessage());
-            return redirect()->back()->with('error', 'Error while creating admin');
+            return redirect()->back()->with('error', 'Error while updating admin');
         }
     }
     public function delete(Request $request, $adminId)

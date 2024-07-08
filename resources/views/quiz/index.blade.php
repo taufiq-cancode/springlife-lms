@@ -27,7 +27,7 @@
                                         <div class="card p-2 h-100 shadow-none border">
                     
                                             <div class="rounded-2 text-center mb-3">
-                                                <a href="{{ route('courses.view', ['courseId' => $course->id]) }}">
+                                                <a href="{{ route('quiz.view', ['courseId' => $course->id]) }}">
                                                     <img class="img-fluid" src="storage/course_images/{{ $course->cover_image ?? '../assets/img/online-learning.png' }}" alt="{{ $course->title }}">
                                                 </a>
                                             </div>
@@ -35,8 +35,7 @@
                                             <div class="card-body p-3 pt-2">
                                                 @if(auth()->check() && auth()->user()->role === 'user')
                                                     <div class="d-flex justify-content-between align-items-center mb-3">
-                                                        <span class="badge bg-label-primary"><i class='bx bx-question-mark'></i> 20 Questions</span>
-                                                        <span class="badge bg-label-secondary"><i class='bx bxs-time'></i> 30 Minutes</span>
+                                                        <span class="badge bg-label-primary" style="width:100%"><i class='bx bx-question-mark'></i> 20 Questions</span>
                                                     </div>
                                                 @else
                                                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -44,7 +43,7 @@
                                                     </div>
                                                 @endif
                                                 
-                                                <a href="{{ route('courses.view', ['courseId' => $course->id]) }}" class="h5">{{ $course->title }}</a>
+                                                <a href="{{ route('quiz.view', ['courseId' => $course->id]) }}" class="h5">{{ $course->title }}</a>
                                                 <p class="mt-2">{{ $course->description }}</p>
                                                 
                                                 @if(auth()->check() && auth()->user()->role === 'user')
@@ -55,14 +54,12 @@
                                                     <a href="{{ route('quiz.view', ['courseId' => $course->id]) }}" style="width: 100%;" class="btn btn-outline-primary">Start Quiz <i class='bx bx-chevron-right'></i></a>
                                                 @endif
                     
-                                                @if(auth()->check() && auth()->user()->role === 'admin')
+                                                @if(auth()->check() && auth()->user()->role === 'admin' || auth()->user()->role === 'tutor')
                                                     <div class="d-flex gap-2">
                                                         <a href="{{ route('quiz.admin-view', ['courseId' => $course->id]) }}" style="width: 100%;" class="btn btn-outline-primary">View Quiz</a>
                                                     </div>
                                                 @endif
-                    
                                             </div>
-                    
                                         </div>
                                     </div>
                                 @endforeach
