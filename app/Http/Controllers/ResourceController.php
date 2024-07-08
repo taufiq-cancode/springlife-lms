@@ -39,22 +39,44 @@ class ResourceController extends Controller
     {
         try {
             $course = Course::findOrFail($courseId);
-            $filePath = public_path("storage/course_files/{$course->file}");
-    
+
+            // Use storage_path instead of public_path
+            $filePath = storage_path("app/public/{$course->file}");
+
             if (file_exists($filePath)) {
+                $filename = $course->title . '.pdf';
+
                 $headers = [
                     'Content-Type' => 'application/pdf',
                 ];
-    
-                return response()->file($filePath, $headers);
+
+                return response()->download($filePath, $filename, $headers);
             } else {
                 return redirect()->route('courses.index')->with('error', 'PDF file not found.');
             }
-    
         } catch (\Exception $e) {
-            Log::error('Error while fetching file: ' . $e->getMessage());
-            return redirect()->back()->with('error', $e->getMessage());
+            Log::error('Error while downloading file: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error while downloading file');
         }
     }
+
+    public function view($courseId)
+{
+    try {
+        $course = Course::findOrFail($courseId);
+
+        $filePath = storage_path("app/public/{$course->file}");
+
+        if (file_exists($filePath)) {
+            return response()->file($filePath);
+        } else {
+            return redirect()->route('courses.index')->with('error', 'PDF file not found.');
+        }
+    } catch (\Exception $e) {
+        Log::error('Error while viewing file: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Error while viewing file');
+    }
+}
+
     
 }

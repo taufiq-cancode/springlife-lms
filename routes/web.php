@@ -68,7 +68,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/add/{courseId}', [ResourceController::class, 'create']) ->name('resources.add');
         Route::post('/store/{courseId}', [ResourceController::class, 'store']) ->name('resources.store');
         Route::get('/download/{resourceId}', [ResourceController::class, 'download'])->name('resources.download');
-        Route::get('/view/{resourceId}', [ResourceController::class, 'view']) ->name('resources.view');
+        Route::get('/view/{courseId}', [ResourceController::class, 'view']) ->name('resources.view');
         Route::get('/edit/{resourceId}', [ResourceController::class, 'edit']) ->name('resources.edit');
         Route::post('/update/{resourceId}', [ResourceController::class, 'update']) ->name('resources.update');
         Route::get('/delete/{resourceId}', [ResourceController::class, 'delete']) ->name('resources.delete');

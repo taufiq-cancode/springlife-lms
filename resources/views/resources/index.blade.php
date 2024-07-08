@@ -27,10 +27,10 @@
                                 @foreach ($courses as $course)
                                     <div class="col-md-6 col-lg-4 mb-3">
                                         <div class="card h-100">
-                                            <img class="card-img-top" src="storage/course_images/{{ $course->cover_image ?? '../assets/img/online-learning.png' }}" alt="Card image cap">
+                                            <img class="img-fluid" src="{{ asset('storage/' . ($course->cover_image ?? 'assets/img/online-learning.png')) }}" alt="{{ $course->title }}">
                                             <div class="card-body">
                                                 <h5 class="card-title">{{ $course->title }}</h5>
-                                                <a href="{{ route('courses.download', ['courseId' => $course->id]) }}" target="_blank" class="btn btn-outline-primary">View Resource <i class='bx bx-download'></i></a>
+                                                <a href="{{ route('resources.view', ['courseId' => $course->id]) }}" target="_blank" class="btn btn-outline-primary">View Resource <i class='bx bx-download'></i></a>
                                             </div>
                                         </div>
                                     </div>

@@ -162,7 +162,7 @@
 
                                 <h5>Course Resource</h5>
                                 <div class="list-group list-group-flush">
-                                    <a href="{{ route('courses.download', ['courseId' => $course->id]) }}" target="_blank" class="list-group-item list-group-item-action">
+                                    <a href="{{ route('resources.view', ['courseId' => $course->id]) }}" target="_blank" class="list-group-item list-group-item-action">
                                         <i class='bx bxs-file-pdf'></i> {{ $course->title }}
                                         <i class='bx bx-download' style="float:right; color:cornflowerblue"></i>
                                     </a>

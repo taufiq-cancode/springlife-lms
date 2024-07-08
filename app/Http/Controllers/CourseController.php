@@ -60,22 +60,18 @@ class CourseController extends Controller
                 'tutor_id' => 'nullable|exists:users,id',
             ]);
     
-            $file = $request->file('file');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('course_files', $fileName, 'public');
-    
-            $cover_image = $request->file('cover_image');
-            if ($cover_image) {
-                $imageName = time() . '_' . $cover_image->getClientOriginalName();
-                $cover_image->storeAs('course_images', $imageName, 'public');
-            } else {
-                $imageName = null;
+            if ($request->hasFile('file')) {
+                $filePath = $request->file('file')->store('files', 'public');
+            }
+
+            if ($request->hasFile('cover_image')) {
+                $imageName = $request->file('cover_image')->store('course_images', 'public');
             }
     
             $course = new Course();
             $course->title = $request->input('title');
             $course->description = $request->input('description');
-            $course->file = $fileName;
+            $course->file = $filePath;
             $course->cover_image = $imageName;
             $course->save();
     
@@ -195,29 +191,29 @@ class CourseController extends Controller
             }
     
             $request->validate($rules);
-    
-            // Logging file information
+
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
-              
+        
                 if ($course->file) {
-                    Storage::disk('public')->delete('course_files/' . $course->file);
+                    Storage::disk('public')->delete($course->file);
                 }
-    
+        
                 $fileName = time() . '_' . $file->getClientOriginalName();
-                $file->storeAs('course_files', $fileName, 'public');
-                $course->file = $fileName;
+                $filePath = $file->storeAs('course_files', $fileName, 'public');
+                $course->file = $filePath;
             }
-    
+        
             if ($request->hasFile('cover_image')) {
-                if ($course->cover_image) {
-                    Storage::disk('public')->delete('course_images/' . $course->cover_image);
-                }
-    
                 $cover_image = $request->file('cover_image');
+        
+                if ($course->cover_image) {
+                    Storage::disk('public')->delete($course->cover_image);
+                }
+        
                 $imageName = time() . '_' . $cover_image->getClientOriginalName();
-                $cover_image->storeAs('course_images', $imageName, 'public');
-                $course->cover_image = $imageName;
+                $imagePath = $cover_image->storeAs('course_images', $imageName, 'public');
+                $course->cover_image = $imagePath;
             }
     
             $course->title = $request->input('title');
@@ -252,28 +248,29 @@ class CourseController extends Controller
             return redirect()->back()->with('error', 'Error deleting course: ' . $e->getMessage());
         }
     }
-    public function download($courseId){
-        try{
+    public function download($courseId)
+    {
+        try {
             $course = Course::findOrFail($courseId);
-
-            $filePath = public_path("storage/course_files/{$course->file}");
-
+    
+            // Use storage_path instead of public_path
+            $filePath = storage_path("app/public/{$course->file}");
+    
             if (file_exists($filePath)) {
                 $filename = $course->title . '.pdf';
-
+    
                 $headers = [
                     'Content-Type' => 'application/pdf',
                 ];
-
+    
                 return response()->download($filePath, $filename, $headers);
             } else {
                 return redirect()->route('courses.index')->with('error', 'PDF file not found.');
             }
-
-        }catch(\Exception $e){
-            Log::error('Error while downloading file: '. $e->getMessage());
-            return redirect()->back()->with('error', $e->getMessage());
+        } catch (\Exception $e) {
+            Log::error('Error while downloading file: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error while downloading file');
         }
-        
-    }   
+    }
+      
 }

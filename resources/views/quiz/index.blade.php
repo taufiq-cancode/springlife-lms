@@ -28,7 +28,7 @@
                     
                                             <div class="rounded-2 text-center mb-3">
                                                 <a href="{{ route('quiz.view', ['courseId' => $course->id]) }}">
-                                                    <img class="img-fluid" src="storage/course_images/{{ $course->cover_image ?? '../assets/img/online-learning.png' }}" alt="{{ $course->title }}">
+                                                    <img class="img-fluid" src="{{ asset('storage/' . ($course->cover_image ?? 'assets/img/online-learning.png')) }}" alt="{{ $course->title }}">
                                                 </a>
                                             </div>
                                             
