@@ -51,7 +51,7 @@ class TutorController extends Controller
 
             DB::commit();
 
-            return redirect()->back()->with('success', 'Tutor created and assigned to course successfully.');
+            return redirect()->back()->with('success', 'Tutor created successfully.');
 
         } catch(ValidationException $e) {
             DB::rollback();

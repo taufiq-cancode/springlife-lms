@@ -21,12 +21,13 @@ class DashboardController extends Controller
             $courses = [];
 
             if ($user->role === 'admin') {
-                $courses = Course::all();
+                $courses = Course::orderBy('created_at', 'desc')->get();
             } elseif ($user->role === 'tutor') {
-                $courses = $user->tutoredCourses;
+                $courses = $user->tutoredCourses()->orderBy('created_at', 'desc')->get();
             } else {
-                $courses = Course::all();
+                $courses = Course::orderBy('created_at', 'desc')->get();
             }
+            
             $totalLessons = Lesson::count();
             $totalCourses = $courses->count();
             $reports = Report::all();

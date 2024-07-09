@@ -32,15 +32,16 @@ class CourseController extends Controller
         $courses = [];
 
         if ($user->role === 'admin') {
-            $courses = Course::all();
+            $courses = Course::orderBy('created_at', 'desc')->get();
         } elseif ($user->role === 'tutor') {
-            $courses = $user->tutoredCourses;
+            $courses = $user->tutoredCourses()->orderBy('created_at', 'desc')->get();
         } else {
-            $courses = Course::all();
+            $courses = Course::orderBy('created_at', 'desc')->get();
         }
         
         return view('courses.index', compact('courses', 'tutors')); 
     }
+
     public function store(Request $request)
     {
         try{
