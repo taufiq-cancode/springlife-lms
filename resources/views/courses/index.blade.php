@@ -42,8 +42,12 @@
                                                 <a href="{{ route('courses.view', ['courseId' => $course->id]) }}">
                                                     <img class="img-fluid" src="{{ asset('storage/' . ($course->cover_image ?? 'assets/img/online-learning.png')) }}" alt="{{ $course->title }}">
                                                 </a>
-                                            </div>
-                                            
+                                            </div>       
+                                                                                 
+                                            @php
+                                                Log::info('Image path: ' . asset('storage/' . $course->cover_image));
+                                            @endphp
+
                                             <div class="card-body p-3 pt-2">
                     
                                                 <div class="d-flex justify-content-between align-items-center mb-3">

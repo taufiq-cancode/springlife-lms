@@ -62,22 +62,20 @@ class ResourceController extends Controller
     }
 
     public function view($courseId)
-{
-    try {
-        $course = Course::findOrFail($courseId);
+    {
+        try {
+            $course = Course::findOrFail($courseId);
 
-        $filePath = storage_path("app/public/{$course->file}");
+            $filePath = storage_path("app/public/{$course->file}");
 
-        if (file_exists($filePath)) {
-            return response()->file($filePath);
-        } else {
-            return redirect()->route('courses.index')->with('error', 'PDF file not found.');
+            if (file_exists($filePath)) {
+                return response()->file($filePath);
+            } else {
+                return redirect()->route('courses.index')->with('error', 'PDF file not found.');
+            }
+        } catch (\Exception $e) {
+            Log::error('Error while viewing file: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error while viewing file');
         }
-    } catch (\Exception $e) {
-        Log::error('Error while viewing file: ' . $e->getMessage());
-        return redirect()->back()->with('error', 'Error while viewing file');
-    }
-}
-
-    
+    }  
 }
