@@ -26,6 +26,7 @@ class TutorController extends Controller
                 'course_id' => 'nullable|exists:courses,id',
                 'firstname' => 'required|string',
                 'lastname' => 'required|string',
+                'gender' => 'required|string|in:male,female,other',
                 'email' => 'required|email|unique:users,email',
             ]);
 
@@ -34,6 +35,7 @@ class TutorController extends Controller
             $tutor = new User();
             $tutor->firstname = $request->firstname;
             $tutor->lastname = $request->lastname;
+            $tutor->gender = $request->gender;
             $tutor->email = $request->email;
             $tutor->role = 'tutor';
             $tutor->status = 0;
@@ -73,6 +75,7 @@ class TutorController extends Controller
                 'course_id' => 'nullable|exists:courses,id',
                 'firstname' => 'nullable|string',
                 'lastname' => 'nullable|string',
+                'gender' => 'nullable|string|in:male,female,other',
                 'email' => [
                     'nullable',
                     'email',

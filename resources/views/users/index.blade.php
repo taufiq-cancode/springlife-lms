@@ -391,6 +391,17 @@
                           <input type="text" id="email" name="email" class="form-control" required placeholder="Enter email address">
                       </div>
                   </div>
+
+                  <div class="row">
+                    <div class="col mb-3">
+                        <label for="email" class="form-label">Gender</label>
+                        <select id="defaultSelect" class="form-select" name="gender" required>
+                          <option>Select Gender</option>
+                          <option value="male">Male</option>
+                          <option value="female">Female</option>
+                        </select>
+                    </div>
+                  </div>
           
                   <div class="row">
                       <div class="col mb-3">
@@ -446,6 +457,17 @@
                     <div class="col mb-3">
                         <label for="nameWithTitle" class="form-label">Email Address</label>
                         <input type="text" id="nameWithTitle" name="email" class="form-control" required placeholder="Enter email address">
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col mb-3">
+                        <label for="email" class="form-label">Gender</label>
+                        <select id="defaultSelect" class="form-select" name="gender" required>
+                          <option>Select Gender</option>
+                          <option value="male">Male</option>
+                          <option value="female">Female</option>
+                        </select>
                     </div>
                   </div>
               </div>

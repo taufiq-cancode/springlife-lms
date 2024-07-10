@@ -39,6 +39,7 @@ class UsersController extends Controller
                 $request->validate([
                     'firstname' => 'required|string',
                     'lastname' => 'required|string',
+                    'gender' => 'required|string|in:male,female,other',
                     'email' => 'required|email|unique:users,email',
                     'role' => 'required|string|in:admin,chapter_coordinator,zonal_coordinator,regional_coordinator,national_coordinator',
                 ]);
@@ -48,6 +49,7 @@ class UsersController extends Controller
                 $user = new User();
                 $user->firstname = $request->firstname;
                 $user->lastname = $request->lastname;
+                $user->gender = $request->gender;
                 $user->email = $request->email;
                 $user->role = $request->role;
                 $user->status = 0;
@@ -79,6 +81,7 @@ class UsersController extends Controller
                 $request->validate([
                     'firstname' => 'nullable|string',
                     'lastname' => 'nullable|string',
+                    'gender' => 'nullable|string|in:male,female,other',
                     'email' => [
                         'nullable',
                         'email',

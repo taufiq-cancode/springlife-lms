@@ -37,6 +37,14 @@
     <script src="../assets/js/config.js"></script>
   </head>
 
+  <style>
+    .alert-success {
+      background-color: #e8fadf;
+      border-color: #d4f5c3;
+      color: #3f990f;
+    }
+</style>
+
   <body>
     <!-- Content -->
     <div class="container-xxl">
