@@ -82,6 +82,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/upload/{courseId}', [QuizController::class, 'uploadQuestions'])->name('quiz.question.upload');
         Route::post('/update/question/{questionId}', [QuizController::class, 'updateQuestion']) ->name('quiz.question.update');
         Route::delete('/delete/question/{questionId}', [QuizController::class, 'deleteQuestion']) ->name('quiz.question.delete');
+        Route::get('/question/template', [QuizController::class, 'downloadTemplate'])->name('quiz.question.template');
+
     });
     
     Route::prefix('certificates')->group(function(){

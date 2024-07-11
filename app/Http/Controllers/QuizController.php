@@ -224,6 +224,13 @@ class QuizController extends Controller
             return redirect()->back()->with('error', 'Error while updating quiz question');
         }
     }
+
+    public function downloadTemplate()
+    {
+        $file = public_path('questions_template.csv');
+        return response()->download($file, 'questions_template.csv');
+    }
+
     public function deleteQuestion($questionId){
         try {
             $question = Question::findOrFail($questionId);
@@ -235,4 +242,6 @@ class QuizController extends Controller
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
+
+
 }

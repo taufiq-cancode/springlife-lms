@@ -218,12 +218,13 @@
                       </div>
 
 
-                    <div class="d-grid gap-2 col-lg-6 mx-auto">
+                      <div class="d-grid gap-2 col-lg-6 mx-auto">
                         <form method="POST" action="{{ route('quiz.question.upload', ['courseId' => $course->id]) }}" enctype="multipart/form-data">
                             @csrf
                             <input class="form-control" type="file" id="csv_file" name="csv_file" required>
                             <button type="submit" class="btn btn-primary mt-2" style="width: 100%" type="button">Upload CSV</button>
                         </form>
+                        <a href="{{ route('quiz.question.template') }}" class="btn btn-secondary mt-2" style="width: 100%">Download CSV Template</a>
                     </div>
 
                 </div>
