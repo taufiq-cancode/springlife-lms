@@ -36,6 +36,8 @@ Route::get('/certificate', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']) ->name('dashboard');
+    Route::get('/campus-mission/dashboard', [DashboardController::class, 'campusDashboard']) ->name('campus.dashboard');
+    Route::get('/bible-study/dashboard', [DashboardController::class, 'bibleDashboard']) ->name('bible.dashboard');
     Route::post('/submit-quiz', [QuizController::class, 'submitQuiz'])->name('submit-quiz');
 
     Route::prefix('profile')->group(function(){
@@ -106,6 +108,13 @@ Route::middleware('auth')->group(function () {
         Route::delete('/delete/{tutorId}', [TutorController::class, 'delete']) ->name('tutor.delete');
     });
 
+    Route::prefix('coordinator')->group(function(){
+        Route::get('/', [UsersController::class, 'coordinators']) ->name('coordinator.index');
+        Route::post('/store', [UsersController::class, 'store']) ->name('coordinator.store');
+        Route::put('/update/{coordinatorId}', [UsersController::class, 'update']) ->name('coordinator.update');
+        Route::delete('/delete/{coordinatorId}', [UsersController::class, 'delete']) ->name('coordinator.delete');
+    });
+
     Route::prefix('admin')->group(function(){
         Route::post('/store', [AdminController::class, 'store']) ->name('admin.store');
         Route::put('/update/{adminId}', [UsersController::class, 'update']) ->name('admin.update');
@@ -118,6 +127,8 @@ Route::middleware('auth')->group(function () {
     Route::prefix('reports')->group(function(){
         Route::get('/', [ReportController::class, 'index']) ->name('reports.index');
         Route::get('/create', [ReportController::class, 'create']) ->name('reports.create');
+        Route::get('/view/{id}/{role}', [ReportController::class, 'showReport']) ->name('report.view');
+        Route::post('/store/student', [ReportController::class, 'student']) ->name('report.student');
         Route::post('/store/mission', [ReportController::class, 'mission']) ->name('report.mission');
         Route::post('/store/chapter', [ReportController::class, 'chapter']) ->name('report.chapter');
         Route::post('/store/zonal', [ReportController::class, 'zonal']) ->name('report.zonal');

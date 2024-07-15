@@ -39,7 +39,7 @@
                   </div>
                   <div class="flex-grow-1" style="margin-top: 10px;">
                     <span class="fw-semibold d-block">{{ Illuminate\Support\Str::title(auth()->user()->firstname) }} {{ Illuminate\Support\Str::title(auth()->user()->lastname) }}</span>
-                    <span>{{ Illuminate\Support\Str::title(auth()->user()->role) }}</span>
+                    <span>{{ Illuminate\Support\Str::title(str_replace('_', ' ', auth()->user()->role)) }}</span>
                   </div>
                 </div>
               </a>

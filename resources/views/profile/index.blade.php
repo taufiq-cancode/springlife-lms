@@ -1,4 +1,5 @@
 @extends('theme.theme-master')
+
 @section('content')
 
     <div class="content-wrapper">

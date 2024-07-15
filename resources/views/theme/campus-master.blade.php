@@ -28,7 +28,7 @@
     <link rel="stylesheet" href="{{ asset('../assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
     <link rel="stylesheet" href="{{ asset('../assets/vendor/libs/apex-charts/apex-charts.css') }}" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
     <script src="{{ asset('../assets/vendor/js/helpers.js') }}"></script>
     <script src="{{ asset('../assets/js/config.js') }}"></script>
 </head>
@@ -45,12 +45,7 @@
     <div class="layout-wrapper layout-content-navbar">
         <div class="layout-container">
             <!-- Menu -->
-
-            @if(auth()->check() && auth()->user()->role !== 'tutor' && auth()->user()->role !== 'user') 
-              @include('theme.campus-sidebar')
-            @else
-              @include('theme.sidebar')
-            @endif
+            @include('theme.campus-sidebar')
 
             <!-- Layout container -->
             <div class="layout-page">
@@ -78,7 +73,7 @@
     <script src="{{ asset('../assets/js/dashboards-analytics.js') }}"></script>
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <script src="https://kit.fontawesome.com/312375bc9e.js" crossorigin="anonymous"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox-plus-jquery.min.js"></script>
   </body>
 </html>
 

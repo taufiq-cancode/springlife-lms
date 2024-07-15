@@ -25,19 +25,22 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        try{
+        try {
             $request->authenticate();
-
+    
             $request->session()->regenerate();
-
+    
+            if (auth()->check() && auth()->user()->role === 'student_coordinator' || auth()->user()->role === 'chapter_coordinator' || auth()->user()->role === 'zonal_coordinator' || auth()->user()->role === 'regional_coordinator' || auth()->user()->role === 'national_coordinator') {
+                return redirect()->intended('campus-mission/dashboard'); // Adjust the route as necessary
+            }
+    
             return redirect()->intended(RouteServiceProvider::HOME);
             
-        }catch(\Exception $e){
-
+        } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
-            
         }
     }
+    
 
     /**
      * Destroy an authenticated session.

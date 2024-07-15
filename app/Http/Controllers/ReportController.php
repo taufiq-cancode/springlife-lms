@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ChapterReport;
 use App\Models\MissionReport;
 use App\Models\RegionalReport;
+use App\Models\StudentReport;
 use App\Models\Report;
 use App\Models\ZonalReport;
 use Dotenv\Exception\ValidationException;
@@ -22,28 +23,87 @@ class ReportController extends Controller
         $userRole = $user->role;
 
         if ($userRole === 'chapter_coordinator') {
-            $userReports = ChapterReport::where('user_id', $user->id)->get(); 
-        } else if ($userRole === 'national_coordinator') {
-            $userReports = MissionReport::where('user_id', $user->id)->get(); 
-            $regionalReports = RegionalReport::all();
-        } else if ($userRole === 'zonal_coordinator') {
-            $userReports = ZonalReport::where('user_id', $user->id)->get(); 
-            $chapterReports = ChapterReport::all();
-        } else if ($userRole === 'regional_coordinator') {
-            $userReports = RegionalReport::where('user_id', $user->id)->get(); 
-            $zonalReports = ZonalReport::all();
-        } 
+            $userReports = ChapterReport::where('user_id', $user->id)
+                                        ->orderBy('created_at', 'desc')
+                                        ->get();
+        } elseif ($userRole === 'national_coordinator') {
+            $userReports = MissionReport::where('user_id', $user->id)
+                                        ->orderBy('created_at', 'desc')
+                                        ->get(); 
+        } elseif ($userRole === 'zonal_coordinator') {
+            $userReports = ZonalReport::where('user_id', $user->id)
+                                        ->orderBy('created_at', 'desc')
+                                        ->get();
+        } elseif ($userRole === 'regional_coordinator') {
+            $userReports = RegionalReport::where('user_id', $user->id)
+                                        ->orderBy('created_at', 'desc')
+                                        ->get();
+        } elseif ($userRole === 'student_coordinator') {
+            $userReports = StudentReport::where('user_id', $user->id)
+                                        ->orderBy('created_at', 'desc')
+                                        ->get();
+        } else {
+            $userReports = null;
+        }
 
+        $studentReports = StudentReport::all();
         $chapterReports = ChapterReport::all();
         $zonalReports = ZonalReport::all();
         $regionalReports = RegionalReport::all();
         $missionReports = MissionReport::all();
-        return view('reports.index', compact('userReports', 'chapterReports', 'zonalReports', 'regionalReports', 'missionReports'));
+
+        return view('reports.index', compact('userReports', 'studentReports', 'chapterReports', 'zonalReports', 'regionalReports', 'missionReports'));
     }
     
     public function create()
     {
         return view('reports.create');
+    }
+
+    public function showReport($id, $role)
+    {  
+        if ($role === 'chapter_coordinator') {
+            $data = ChapterReport::where('id', $id)->first(); 
+        } else if ($role === 'regional_coordinator') {
+            $data = RegionalReport::where('id', $id)->first(); 
+        } else if ($role === 'zonal_coordinator') {
+            $data = ZonalReport::where('id', $id)->first();
+        } else if ($role === 'student_coordinator') {
+            $data = StudentReport::where('id', $id)->first(); 
+        } else if ($role === 'mission_coordinator') {
+            $data = MissionReport::where('id', $id)->first(); 
+        }
+                
+        return view('reports.view', ['report' => $data, 'role' => $role]);
+    }
+
+    public function student(Request $request)
+    {
+        try{
+            $validatedData = $request->validate([
+                
+                'chapter_name' => 'required|string|max:255',
+                'zone_or_conference_name' => 'required|string|max:255',
+                'year_level' => 'required|string|in:100 level,200 level,300 level,400 level',
+                'phone_number' => 'required|string|max:15',
+                'mission_training_completed' => 'required|boolean',
+                'mission_training_completed_date' => 'nullable|date|required_if:mission_training_completed,1',
+                'bible_study_completed' => 'required|boolean',
+                'bible_study_completed_date' => 'nullable|date|required_if:christ_our_saviour_bible_study_completed,1',
+            ]);
+
+            $validatedData['full_name'] = auth()->user()->firstname .' '.auth()->user()->lastname;
+            $validatedData['email'] = auth()->user()->email;
+            $validatedData['user_id'] = auth()->user()->id;
+
+            StudentReport::create($validatedData);
+
+            return redirect()->route('reports.index')->with('success', 'Report submitted successfully.');       
+        
+        }catch (ValidationException $e){
+            Log::error($e->getMessage());
+            return redirect()->back()->with('Error', $e->getMessage());       
+        } 
     }
 
     public function mission(Request $request)
@@ -120,7 +180,9 @@ class ReportController extends Controller
 
     public function zonal(Request $request)
     {
-        try{
+        try {
+            Log::info('Request received.');
+
             $validatedData = $request->validate([
                 'name_of_your_zone' => 'required|string|max:255',
                 'date_of_the_report' => 'required|date',
@@ -134,7 +196,7 @@ class ReportController extends Controller
                 'name_of_the_missionary_of_the_month' => 'nullable|string|max:255',
                 'did_any_chapter_embark_on_mission_related_program_this_month' => 'nullable|string|max:255',
                 'if_yes_give_detail_in_this_box_below' => 'nullable|string',
-                'any_photograph_taken_during_the_mission_event' => 'nullable|file|mimes:jpg,jpeg,png',
+                'any_photograph_taken_during_the_mission_event.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'mission_follow_up_plan' => 'nullable|string',
                 'mission_program' => 'nullable|string|max:255',
                 'date1' => 'nullable|date',
@@ -146,22 +208,43 @@ class ReportController extends Controller
                 'is_any_chapter_facing_any_challenge_in_the_mission_field' => 'nullable|string'
             ]);
 
-            if ($request->hasFile('any_photograph_taken_during_the_mission_event')) {
-                $path = $request->file('any_photograph_taken_during_the_mission_event')->store('uploads', 'public');
-                $validatedData['any_photograph_taken_during_the_mission_event'] = $path;
+            Log::info('Validation successful.', $validatedData);
+
+            $imagePaths = [];
+
+            if ($request->hasfile('any_photograph_taken_during_the_mission_event')) {
+                Log::info('Files detected.');
+
+                foreach ($request->file('any_photograph_taken_during_the_mission_event') as $image) {
+                    $imagePath = $image->store('mission_images', 'public');
+                    $imagePaths[] = $imagePath;
+
+                    Log::info('Image stored.', ['path' => $imagePath]);
+                }
+
+                $validatedData['any_photograph_taken_during_the_mission_event'] = json_encode($imagePaths);
+                Log::info('Image paths JSON encoded.', ['paths' => $imagePaths]);
+            } else {
+                Log::info('No files uploaded.');
             }
 
             $userId = Auth::id();
             $validatedData['user_id'] = $userId;
+            Log::info('User ID attached.', ['user_id' => $userId]);
 
             ZonalReport::create($validatedData);
+            Log::info('ZonalReport created.', $validatedData);
 
             return redirect()->route('reports.index')->with('success', 'Report submitted successfully.');
+        } catch (ValidationException $e) {
+            Log::error('Validation failed.', ['error' => $e->errors()]);
 
-        }catch (ValidationException $e){
-            Log::error($e->getMessage());
-            return redirect()->back()->with('Error', $e->getMessage());       
-        } 
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            Log::error('An unexpected error occurred.', ['error' => $e->getMessage()]);
+
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     public function regional(Request $request)
@@ -180,7 +263,7 @@ class ReportController extends Controller
                 'name_of_the_missionary_of_the_month' => 'nullable|string|max:255',
                 'did_any_zone_embark_on_mission_related_program_this_month' => 'nullable|string|max:255',
                 'if_yes_give_detail_in_this_box_below' => 'nullable|string',
-                'any_photograph_taken_during_the_mission_event' => 'nullable|file|mimes:jpg,jpeg,png',
+                'any_photograph_taken_during_the_mission_event.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'mission_follow_up_plan' => 'nullable|string',
                 'mission_program' => 'nullable|string|max:255',
                 'date1' => 'nullable|date',
@@ -192,21 +275,40 @@ class ReportController extends Controller
                 'is_any_chapter_facing_any_challenge_in_the_mission_field' => 'nullable|string'
             ]);
 
-            if ($request->hasFile('any_photograph_taken_during_the_mission_event')) {
-                $path = $request->file('any_photograph_taken_during_the_mission_event')->store('uploads', 'public');
-                $validatedData['any_photograph_taken_during_the_mission_event'] = $path;
+            $imagePaths = [];
+
+            if ($request->hasfile('any_photograph_taken_during_the_mission_event')) {
+                Log::info('Files detected.');
+
+                foreach ($request->file('any_photograph_taken_during_the_mission_event') as $image) {
+                    $imagePath = $image->store('mission_images', 'public');
+                    $imagePaths[] = $imagePath;
+
+                    Log::info('Image stored.', ['path' => $imagePath]);
+                }
+
+                $validatedData['any_photograph_taken_during_the_mission_event'] = json_encode($imagePaths);
+                Log::info('Image paths JSON encoded.', ['paths' => $imagePaths]);
+            } else {
+                Log::info('No files uploaded.');
             }
 
             $userId = Auth::id();
             $validatedData['user_id'] = $userId;
+            Log::info('User ID attached.', ['user_id' => $userId]);
 
             RegionalReport::create($validatedData);
+            Log::info('RegionalReport created.', $validatedData);
 
-            return redirect()->route('reports.index')->with('success', 'Report submitted successfully.');       
-        
-        }catch (ValidationException $e){
-            Log::error($e->getMessage());
-            return redirect()->back()->with('Error', $e->getMessage());       
-        } 
+            return redirect()->route('reports.index')->with('success', 'Report submitted successfully.');
+        } catch (ValidationException $e) {
+            Log::error('Validation failed.', ['error' => $e->errors()]);
+
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            Log::error('An unexpected error occurred.', ['error' => $e->getMessage()]);
+
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 }

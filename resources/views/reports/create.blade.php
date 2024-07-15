@@ -1,5 +1,28 @@
-@extends('theme.theme-master')
+@extends('theme.campus-master')
 @section('content')
+
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+@if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
+
+@if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
 
     <div class="content-wrapper">
 
@@ -14,6 +37,110 @@
                 <div class="card mb-4">
                     <div class="card-body">
                         <div class="row gy-4 mb-4">
+                            @if(auth()->check() && auth()->user()->role === 'student_coordinator')
+                                <form method="POST" action="{{ route('report.student') }}" enctype="multipart/form-data">
+                                    @csrf
+                                
+                                    <div class="row">
+                                        <div class="col mb-3">
+                                            <label for="chapter_name" class="form-label">Name of your Chapter</label>
+                                            <input type="text" id="chapter_name" name="chapter_name" class="form-control" required placeholder="Enter your chapter name">
+                                        </div>
+                                    </div>
+                                
+                                    <div class="row">
+                                        <div class="col mb-3">
+                                            <label for="zone_or_conference_name" class="form-label">Name of your Zone/Conference</label>
+                                            <input type="text" id="zone_or_conference_name" name="zone_or_conference_name" class="form-control" required placeholder="Enter your zone or conference name">
+                                        </div>
+                                    </div>
+                                
+                                    <div class="row">
+                                        <div class="col mb-3">
+                                            <label for="year_level" class="form-label">What year/level are you?</label>
+                                            <select id="year_level" name="year_level" class="form-control" required>
+                                                <option value="" selected disabled>Select Year/Level</option>
+                                                <option value="100 level">100 Level</option>
+                                                <option value="200 level">200 Level</option>
+                                                <option value="300 level">300 Level</option>
+                                                <option value="400 level">400 Level</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="row">
+                                        <div class="col mb-3">
+                                            <label for="phone_number" class="form-label">Your Phone Number</label>
+                                            <input type="text" id="phone_number" name="phone_number" class="form-control" required placeholder="Enter Phone Number">
+                                        </div>
+                                    </div>
+                                
+                                    <div class="row">
+                                        <div class="col mb-3">
+                                            <label for="mission_training_completed" class="form-label">Have you completed the online Mission training?</label>
+                                            <select id="mission_training_completed" name="mission_training_completed" class="form-control" required>
+                                                <option value="" selected disabled>Select</option>
+                                                <option value="1">Yes</option>
+                                                <option value="0">No</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="row" id="mission_training_completed_date_row" style="display: none;">
+                                        <div class="col mb-3">
+                                            <label for="mission_training_completed_date" class="form-label">If yes, Date completed</label>
+                                            <input type="date" id="mission_training_completed_date" name="mission_training_completed_date" class="form-control">
+                                        </div>
+                                    </div>
+                                
+                                    <div class="row">
+                                        <div class="col mb-3">
+                                            <label for="christ_our_saviour_bible_study_completed" class="form-label">Have you completed Christ Our Saviour bible study?</label>
+                                            <select id="christ_our_saviour_bible_study_completed" name="bible_study_completed" class="form-control" required>
+                                                <option value="" selected disabled>Select</option>
+                                                <option value="1">Yes</option>
+                                                <option value="0">No</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                
+                                    <div class="row" id="bible_study_completed_date_row" style="display: none;">
+                                        <div class="col mb-3">
+                                            <label for="bible_study_completed_date" class="form-label">If yes, Date completed</label>
+                                            <input type="date" id="bible_study_completed_date" name="bible_study_completed_date" class="form-control">
+                                        </div>
+                                    </div>
+                                
+                                    <div class="row">
+                                        <div class="col mb-3">
+                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                        </div>
+                                    </div>
+                                </form>
+                                
+                                <script>
+                                    document.getElementById('mission_training_completed').addEventListener('change', function () {
+                                        var dateRow = document.getElementById('mission_training_completed_date_row');
+                                        if (this.value == '1') {
+                                            dateRow.style.display = 'block';
+                                        } else {
+                                            dateRow.style.display = 'none';
+                                            document.getElementById('mission_training_completed_date').value = '';
+                                        }
+                                    });
+                                    
+                                    document.getElementById('christ_our_saviour_bible_study_completed').addEventListener('change', function () {
+                                        var dateRow = document.getElementById('bible_study_completed_date_row');
+                                        if (this.value == '1') {
+                                            dateRow.style.display = 'block';
+                                        } else {
+                                            dateRow.style.display = 'none';
+                                            document.getElementById('bible_study_completed_date').value = '';
+                                        }
+                                    });
+                                </script>
+                            @endif
+                            
                             @if(auth()->check() && auth()->user()->role === 'mission_coordinator')
                                 <form method="POST" action="{{ route('report.mission') }}" enctype="multipart/form-data">
                                     @csrf
@@ -129,8 +256,8 @@
                                     
                                     <div class="row">
                                         <div class="col mb-3">
-                                            <label for="name_of_active_missionaries_this_month" class="form-label">Name of active missionaries this month</label>
-                                            <input type="text" id="name_of_active_missionaries_this_month" name="name_of_active_missionaries_this_month" class="form-control" placeholder="Enter Witnessing Partner">
+                                            <label for="number_of_active_missionaries_this_month" class="form-label">Number of active missionaries this month</label>
+                                            <input type="text" id="number_of_active_missionaries_this_month" name="number_of_active_missionaries_this_month" class="form-control" placeholder="Enter number of active missionaries this month">
                                         </div>
                                     </div>
                                     
@@ -164,8 +291,8 @@
                                     
                                     <div class="row">
                                         <div class="col mb-3">
-                                            <label for="number_of_the_missionary_of_the_month" class="form-label">Number of the missionary of the month</label>
-                                            <input type="number" id="number_of_the_missionary_of_the_month" name="number_of_the_missionary_of_the_month" class="form-control" placeholder="Enter Number of Missionary">
+                                            <label for="name_of_the_missionary_of_the_month" class="form-label">Name of the missionary of the month</label>
+                                            <input type="text" id="name_of_the_missionary_of_the_month" name="name_of_the_missionary_of_the_month" class="form-control" placeholder="Enter Name of Missionary">
                                         </div>
                                     </div>
                                     
@@ -272,7 +399,7 @@
                                     <div class="row">
                                         <div class="col mb-3">
                                             <label for="name_of_your_zone" class="form-label">Name of your Zone</label>
-                                            <input type="text" id="name_of_your_zone" name="name_of_your_zone" class="form-control" required placeholder="Enter Institution Name">
+                                            <input type="text" id="name_of_your_zone" name="name_of_your_zone" class="form-control" required placeholder="Enter Zone Name">
                                         </div>
                                     </div>
                                     
@@ -293,49 +420,49 @@
                                     <div class="row">
                                         <div class="col mb-3">
                                             <label for="number_of_missional_chapters_in_your_zone" class="form-label">Number of Missional chapters in Your zone</label>
-                                            <input type="number" id="number_of_missional_chapters_in_your_zone" name="number_of_missional_chapters_in_your_zone" class="form-control" placeholder="Enter Number of Students">
+                                            <input type="number" id="number_of_missional_chapters_in_your_zone" name="number_of_missional_chapters_in_your_zone" class="form-control" placeholder="Enter Number of Missional Chapters">
                                         </div>
                                     </div>
                                     
                                     <div class="row">
                                         <div class="col mb-3">
                                             <label for="number_of_active_missional_chapters_this_month" class="form-label">Number of active missional chapters this month</label>
-                                            <input type="number" id="number_of_active_missional_chapters_this_month" name="number_of_active_missional_chapters_this_month" class="form-control" placeholder="Enter Number of Missionaries">
+                                            <input type="number" id="number_of_active_missional_chapters_this_month" name="number_of_active_missional_chapters_this_month" class="form-control" placeholder="Enter Number of Active Missional Chapters">
                                         </div>
                                     </div>
                                     
                                     <div class="row">
                                         <div class="col mb-3">
                                             <label for="number_of_contacts_made_this_month" class="form-label">Number of contacts made this month</label>
-                                            <input type="text" id="number_of_contacts_made_this_month" name="number_of_contacts_made_this_month" class="form-control" placeholder="Enter Witnessing Partner">
+                                            <input type="number" id="number_of_contacts_made_this_month" name="number_of_contacts_made_this_month" class="form-control" placeholder="Enter Number of Contacts Made this Month">
                                         </div>
                                     </div>
                                     
                                     <div class="row">
                                         <div class="col mb-3">
                                             <label for="number_of_bible_studies_given" class="form-label">Number of Bible studies given</label>
-                                            <input type="number" id="number_of_bible_studies_given" name="number_of_bible_studies_given" class="form-control" placeholder="Enter Number of Contacts">
+                                            <input type="number" id="number_of_bible_studies_given" name="number_of_bible_studies_given" class="form-control" placeholder="Enter Number of Bible Studies Given">
                                         </div>
                                     </div>
                                     
                                     <div class="row">
                                         <div class="col mb-3">
                                             <label for="total_hours_put_into_mission_this_month" class="form-label">Total hours put into Mission this month</label>
-                                            <input type="number" id="total_hours_put_into_mission_this_month" name="total_hours_put_into_mission_this_month" class="form-control" placeholder="Enter Number of Bible Studies">
+                                            <input type="number" id="total_hours_put_into_mission_this_month" name="total_hours_put_into_mission_this_month" class="form-control" placeholder="Enter Total Hours Put in Mission this month">
                                         </div>
                                     </div>
                                     
                                     <div class="row">
                                         <div class="col mb-3">
                                             <label for="number_of_literatures_given" class="form-label">Number of literatures given</label>
-                                            <input type="number" id="number_of_literatures_given" name="number_of_literatures_given" class="form-control" placeholder="Enter Number of Bible Studies">
+                                            <input type="number" id="number_of_literatures_given" name="number_of_literatures_given" class="form-control" placeholder="Enter Number of Literatures Given">
                                         </div>
                                     </div>
                                     
                                     <div class="row">
                                         <div class="col mb-3">
                                             <label for="name_of_the_missionary_of_the_month" class="form-label">Name of the missionary of the month</label>
-                                            <input type="number" id="name_of_the_missionary_of_the_month" name="name_of_the_missionary_of_the_month" class="form-control" placeholder="Enter Number of Bible Studies">
+                                            <input type="text" id="name_of_the_missionary_of_the_month" name="name_of_the_missionary_of_the_month" class="form-control" placeholder="Enter Name of Missionary">
                                         </div>
                                     </div>
                                     
@@ -362,7 +489,7 @@
                                     <div class="row">
                                         <div class="col mb-3">
                                             <label for="any_photograph_taken_during_the_mission_event" class="form-label">Any photograph taken during the mission event? Please upload</label>
-                                            <input type="file" multiple id="any_photograph_taken_during_the_mission_event" name="any_photograph_taken_during_the_mission_event" class="form-control">
+                                            <input type="file" multiple id="any_photograph_taken_during_the_mission_event" name="any_photograph_taken_during_the_mission_event[]" class="form-control">
                                         </div>
                                     </div>
 
@@ -475,56 +602,56 @@
                                     <div class="row">
                                         <div class="col mb-3">
                                             <label for="number_of_zones_in_your_region" class="form-label">Number of Zones in your Region</label>
-                                            <input type="number" id="number_of_zones_in_your_region" name="number_of_zones_in_your_region" class="form-control" placeholder="Enter Number of Chapters">
+                                            <input type="number" id="number_of_zones_in_your_region" name="number_of_zones_in_your_region" class="form-control" placeholder="Enter Number of Zones">
                                         </div>
                                     </div>
                                     
                                     <div class="row">
                                         <div class="col mb-3">
                                             <label for="number_of_missional_zones_in_your_region" class="form-label">Number of Missional zones in Your Region</label>
-                                            <input type="number" id="number_of_missional_zones_in_your_region" name="number_of_missional_zones_in_your_region" class="form-control" placeholder="Enter Number of Students">
+                                            <input type="number" id="number_of_missional_zones_in_your_region" name="number_of_missional_zones_in_your_region" class="form-control" placeholder="Enter Number of Missional Zones">
                                         </div>
                                     </div>
                                     
                                     <div class="row">
                                         <div class="col mb-3">
                                             <label for="number_of_active_missional_zones_this_month" class="form-label">Number of active missional zones this month</label>
-                                            <input type="number" id="number_of_active_missional_zones_this_month" name="number_of_active_missional_zones_this_month" class="form-control" placeholder="Enter Number of Missionaries">
+                                            <input type="number" id="number_of_active_missional_zones_this_month" name="number_of_active_missional_zones_this_month" class="form-control" placeholder="Enter Number of Active Missional Zones">
                                         </div>
                                     </div>
                                     
                                     <div class="row">
                                         <div class="col mb-3">
                                             <label for="number_of_contacts_made_this_month" class="form-label">Number of contacts made this month</label>
-                                            <input type="text" id="number_of_contacts_made_this_month" name="number_of_contacts_made_this_month" class="form-control" placeholder="Enter Witnessing Partner">
+                                            <input type="number" id="number_of_contacts_made_this_month" name="number_of_contacts_made_this_month" class="form-control" placeholder="Enter Number of Contacts Made">
                                         </div>
                                     </div>
                                     
                                     <div class="row">
                                         <div class="col mb-3">
                                             <label for="number_of_bible_studies_given" class="form-label">Number of Bible studies given</label>
-                                            <input type="number" id="number_of_bible_studies_given" name="number_of_bible_studies_given" class="form-control" placeholder="Enter Number of Contacts">
+                                            <input type="number" id="number_of_bible_studies_given" name="number_of_bible_studies_given" class="form-control" placeholder="Enter Number of Bible Studies given">
                                         </div>
                                     </div>
                                     
                                     <div class="row">
                                         <div class="col mb-3">
                                             <label for="total_hours_put_into_mission_this_month" class="form-label">Total hours put into Mission this month</label>
-                                            <input type="number" id="total_hours_put_into_mission_this_month" name="total_hours_put_into_mission_this_month" class="form-control" placeholder="Enter Number of Bible Studies">
+                                            <input type="number" id="total_hours_put_into_mission_this_month" name="total_hours_put_into_mission_this_month" class="form-control" placeholder="Enter total hours put into mission this month">
                                         </div>
                                     </div>
                                     
                                     <div class="row">
                                         <div class="col mb-3">
                                             <label for="number_of_literatures_given" class="form-label">Number of literatures given</label>
-                                            <input type="number" id="number_of_literatures_given" name="number_of_literatures_given" class="form-control" placeholder="Enter Number of Bible Studies">
+                                            <input type="number" id="number_of_literatures_given" name="number_of_literatures_given" class="form-control" placeholder="Enter Number of literatures given">
                                         </div>
                                     </div>
                                     
                                     <div class="row">
                                         <div class="col mb-3">
-                                            <label for="number_of_the_missionary_of_the_month" class="form-label">Name of the missionary of the month</label>
-                                            <input type="number" id="number_of_the_missionary_of_the_month" name="name_of_the_missionary_of_the_month" class="form-control" placeholder="Enter Number of Bible Studies">
+                                            <label for="name_of_the_missionary_of_the_month" class="form-label">Name of the missionary of the month</label>
+                                            <input type="text" id="name_of_the_missionary_of_the_month" name="name_of_the_missionary_of_the_month" class="form-control" placeholder="Enter Name of Missionary">
                                         </div>
                                     </div>
                                     
@@ -551,7 +678,7 @@
                                     <div class="row">
                                         <div class="col mb-3">
                                             <label for="any_photograph_taken_during_the_mission_event" class="form-label">Any photograph taken during the mission event? Please upload</label>
-                                            <input type="file" multiple id="any_photograph_taken_during_the_mission_event" name="any_photograph_taken_during_the_mission_event" class="form-control">
+                                            <input type="file" multiple id="any_photograph_taken_during_the_mission_event" name="any_photograph_taken_during_the_mission_event[]" class="form-control">
                                         </div>
                                     </div>
                                     

@@ -32,6 +32,24 @@ class UsersController extends Controller
             return redirect()->back()->with('error', 'Error while fetching data');
         }
     }
+
+    public function coordinators()
+    {
+        try {
+            $studentCoordinators = User::where('role', 'student_coordinator')->get();
+            $chapterCoordinators = User::where('role', 'chapter_coordinator')->get();
+            $zonalCoordinators = User::where('role', 'zonal_coordinator')->get();
+            $regionalCoordinators = User::where('role', 'regional_coordinator')->get();
+            $nationalCoordinators = User::where('role', 'national_coordinator')->get();
+
+            return view('users.coordinators', compact('studentCoordinators', 'chapterCoordinators', 'zonalCoordinators', 'regionalCoordinators', 'nationalCoordinators'));
+
+        } catch(\Exception $e) {
+            Log::error('Error while fetching data: '. $e->getMessage());
+            return redirect()->back()->with('error', 'Error while fetching data');
+        }
+    }
+
     public function store(Request $request)
     {
         try {
