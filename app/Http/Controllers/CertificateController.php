@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\bsLesson;
 use App\Models\QuizResult;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -32,12 +33,19 @@ class CertificateController extends Controller
         }        
     }
 
-    public function showCertificate($userId, $courseId)
+    // public function showCertificate($userId, $courseId)
+    // {
+    //     $user = User::findOrFail($userId);
+    //     $course = Course::findOrFail($courseId);
+
+    //     return view('certificate', compact('user', 'course'));
+    // }
+
+    public function bsShowCertificate($userId)
     {
         $user = User::findOrFail($userId);
-        $course = Course::findOrFail($courseId);
 
-        return view('certificate', compact('user', 'course'));
+        return view('bs.certificate', compact('user'));
     }
 
     public function generateCertificate($userId, $courseId)
@@ -53,18 +61,7 @@ class CertificateController extends Controller
                                         ->first();
                                         
                 if ($quizResult && $quizResult->score >= 70) {
-                    $html = view('certificate', compact('user', 'course'));
-
-                    $dompdf = app('dompdf');
-                    $dompdf->loadHtml($html);
-
-                    $dompdf->setPaper('A4', 'landscape');
-
-                    $dompdf->render();
-
-                    $pdfname = $user->firstname . " Certificate of Completion - SpringOfLife";
-
-                    return $dompdf->stream($pdfname . '.pdf');
+                    return view('certificate', compact('user', 'course'));
                 } else {
                     return redirect()->back()->with('error', 'You have not passed the quiz for this course.');
                 }

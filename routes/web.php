@@ -12,7 +12,9 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\TutorController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ReportController;
-
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\bsLessonController;
+use App\Http\Controllers\bsQuizController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,15 +32,33 @@ Route::get('/', function () {
     return view('auth.login');
 });
 
+Route::get('/bible-studies/login', function () {
+    return view('auth.login');
+});
+
+Route::get('/mission-institute/login', function () {
+    return view('auth.login');
+});
+
+Route::get('/campus-mission/login', function () {
+    return view('auth.login');
+});
+
 Route::get('/certificate', function () {
     return view('certificate');
 });
 
+// Route::get('/bible-studies/login', [AuthController::class, 'showLoginForm'])->name('bible-studies.login');
+// Route::post('/bible-studies/login', [AuthController::class, 'login']);
+
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']) ->name('dashboard');
-    Route::get('/campus-mission/dashboard', [DashboardController::class, 'campusDashboard']) ->name('campus.dashboard');
-    Route::get('/bible-study/dashboard', [DashboardController::class, 'bibleDashboard']) ->name('bible.dashboard');
+    Route::get('/mission-institute', [DashboardController::class, 'instituteDashboard']) ->name('institute.dashboard');
+    Route::get('/campus-mission', [DashboardController::class, 'campusDashboard']) ->name('campus.dashboard');
+
     Route::post('/submit-quiz', [QuizController::class, 'submitQuiz'])->name('submit-quiz');
+    Route::post('/submit-bs-quiz', [bsQuizController::class, 'submitQuiz'])->name('bs.submit-quiz');
+    Route::post('/bible-studies/logout', [AuthController::class, 'logout'])->name('bible.logout');
 
     Route::prefix('profile')->group(function(){
         Route::get('/', [ProfileController::class, 'index']) ->name('profile.index');
@@ -91,8 +111,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('certificates')->group(function(){
         Route::get('/', [CertificateController::class, 'index']) ->name('certificates.index');
         // Route::get('/{userId}/{courseId}', [CertificateController::class, 'generateCertificate'])->name('certificate.generate');
-        Route::get('/{userId}/{courseId}', [CertificateController::class, 'showCertificate'])->name('certificate.show');
-
+        Route::get('/{userId}/{courseId}', [CertificateController::class, 'generateCertificate'])->name('certificate.show');
     });
 
     Route::prefix('users')->group(function(){
@@ -135,6 +154,24 @@ Route::middleware('auth')->group(function () {
         Route::post('/store/regional', [ReportController::class, 'regional']) ->name('report.regional');
     });
 
+    Route::prefix('bible-studies')->group(function() {
+        Route::get('/', [DashboardController::class, 'bibleDashboard'])->name('bible.dashboard');
+        Route::get('/lessons', [bsLessonController::class, 'index'])->name('bs.lessons.index');
+        Route::get('/profile', [ProfileController::class, 'bsIndex'])->name('bs.profile');
+        Route::get('/students', [UsersController::class, 'bsIndex'])->name('bs.users');
+        Route::post('/store/lessons', [bsLessonController::class, 'store'])->name('bs.lessons.store');
+        Route::get('/certificate/{userId}', [CertificateController::class, 'bsShowCertificate'])->name('bs.certificate.show');
+
+        Route::prefix('quiz')->group(function(){
+            Route::get('/view/{bsLessonId}', [bsQuizController::class, 'view']) ->name('bs.quiz.view');
+            Route::post('/store/question/{bsLessonId}', [bsQuizController::class, 'storeQuestion']) ->name('bs.quiz.question.store');
+            Route::post('/upload/{bsLessonId}', [bsQuizController::class, 'uploadQuestions'])->name('bs.quiz.question.upload');
+            Route::post('/update/question/{questionId}', [bsQuizController::class, 'updateQuestion']) ->name('bs.quiz.question.update');
+            Route::delete('/delete/question/{questionId}', [bsQuizController::class, 'deleteQuestion']) ->name('bs.quiz.question.delete');
+        }); 
+    });
+
+    Route::get('campus-mission/profile', [ProfileController::class, 'cmIndex'])->name('cm.profile');
 });
 
 // Route::middleware('auth')->group(function () {

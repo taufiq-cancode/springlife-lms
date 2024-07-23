@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\bsLesson;
 use App\Models\Course;
 use App\Models\CourseTutor;
 use Illuminate\Http\Request;
@@ -31,6 +32,14 @@ class UsersController extends Controller
             Log::error('Error while fetching data: '. $e->getMessage());
             return redirect()->back()->with('error', 'Error while fetching data');
         }
+    }
+
+    public function bsIndex()
+    {
+        $users = User::whereHas('progress')->with(['progress', 'progress.bsLesson'])->get();
+        $totalLessons = bsLesson::count();
+        
+        return view('bs.students.index', compact('users', 'totalLessons'));
     }
 
     public function coordinators()

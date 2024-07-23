@@ -5,7 +5,7 @@
 
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand demo">
-      <a href="{{ route('dashboard') }}" class="app-brand-link">
+      <a href="{{ route('campus.dashboard') }}" class="app-brand-link">
         <span class="app-brand-logo demo">
           <svg
             width="25"
@@ -73,15 +73,42 @@
 
     <ul class="menu-inner py-1">
       <!-- Dashboard -->
+
+    @if(auth()->user()->role === 'admin')
+      <li class="menu-item {{ ($route == 'campus.dashboard')?'active':'' }}">
+        <a href="{{ route('dashboard') }}" class="menu-link menu-toggle">
+          <i class="menu-icon fa-solid fa-house"></i>
+          <div data-i18n="Dashboards">Dashboards</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item">
+            <a href="{{ route('institute.dashboard') }}" class="menu-link">
+              <div>Mission Institute</div>
+            </a>
+          </li>
+          <li class="menu-item {{ ($route == 'campus.dashboard')?'active':'' }}">
+            <a href="{{ route('campus.dashboard') }}" class="menu-link">
+              <div>Campus Mission</div>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="{{ route('bible.dashboard') }}" class="menu-link">
+              <div>Bible Studies</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+    @else
       <li class="menu-item {{ ($route == 'campus.dashboard')?'active':'' }}">
         <a href="{{ route('campus.dashboard') }}" class="menu-link">
           <i class="menu-icon fa-solid fa-house"></i>
           <div data-i18n="Analytics">Dashboard</div>
         </a>
       </li>
+    @endif
 
       @if(auth()->check() && auth()->user()->role !== 'user' && auth()->user()->role !== 'tutor')
-        <li class="menu-item {{ ($prefix == '/reports')?'active':'' }}">
+        <li class="menu-item {{ ($route == 'reports.index')?'active':'' }}">
           <a href="{{ route('reports.index') }}" class="menu-link">
             <i class='menu-icon fa-solid fa-file-lines'></i></i>
             <div data-i18n="Layouts">Reports</div>
@@ -90,7 +117,7 @@
       @endif
 
       @if(auth()->check() && auth()->user()->role === 'admin')
-        <li class="menu-item {{ ($prefix == '/coordinator')?'active':'' }}">
+        <li class="menu-item {{ ($route == 'coordinator.index')?'active':'' }}">
           <a href="{{ route('coordinator.index') }}" class="menu-link">
             <i class="fa-solid fa-user menu-icon"></i>
             <div data-i18n="Layouts">Coordinators</div>
@@ -98,8 +125,8 @@
         </li>
       @endif
 
-      <li class="menu-item {{ ($prefix == '/profile')?'active':'' }}">
-        <a href="{{ route('profile.index') }}" class="menu-link">
+      <li class="menu-item {{ ($route == 'cm.profile')?'active':'' }}">
+        <a href="{{ route('cm.profile') }}" class="menu-link">
           <i class="fa-solid fa-id-badge menu-icon"></i>
           <div data-i18n="Layouts">Profile</div>
         </a>

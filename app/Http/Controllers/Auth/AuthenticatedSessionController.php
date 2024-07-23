@@ -27,19 +27,30 @@ class AuthenticatedSessionController extends Controller
     {
         try {
             $request->authenticate();
-    
+
             $request->session()->regenerate();
-    
-            if (auth()->check() && auth()->user()->role === 'student_coordinator' || auth()->user()->role === 'chapter_coordinator' || auth()->user()->role === 'zonal_coordinator' || auth()->user()->role === 'regional_coordinator' || auth()->user()->role === 'national_coordinator') {
-                return redirect()->intended('campus-mission/dashboard'); // Adjust the route as necessary
+
+            $previousUrl = url()->previous();
+
+            if (str_contains($previousUrl, '/mission-institute/login')) {
+                return redirect()->intended('mission-institute');
             }
-    
+
+            if (str_contains($previousUrl, '/campus-mission/login')) {
+                return redirect()->intended('campus-mission');
+            }
+
+            if (str_contains($previousUrl, '/bible-studies/login')) {
+                return redirect()->intended('/bible-studies');
+            }
+
             return redirect()->intended(RouteServiceProvider::HOME);
             
         } catch (\Exception $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
+
     
 
     /**

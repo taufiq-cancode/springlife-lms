@@ -5,7 +5,7 @@
 
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand demo">
-      <a href="{{ route('institute.dashboard') }}" class="app-brand-link">
+      <a href="{{ route('bible.dashboard') }}" class="app-brand-link">
         <span class="app-brand-logo demo">
           <svg
             width="25"
@@ -74,65 +74,66 @@
     <ul class="menu-inner py-1">
       <!-- Dashboard -->
 
-    @if(auth()->user()->role === 'admin')
-      <li class="menu-item {{ ($route == 'institute.dashboard')?'active':'' }}">
-        <a href="{{ route('dashboard') }}" class="menu-link menu-toggle">
-          <i class="menu-icon fa-solid fa-house"></i>
-          <div data-i18n="Dashboards">Dashboards</div>
-        </a>
-        <ul class="menu-sub">
-          <li class="menu-item {{ ($route == 'institute.dashboard')?'active':'' }}">
-            <a href="{{ route('institute.dashboard') }}" class="menu-link">
-              <div data-i18n="Mission Institute">Mission Institute</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="{{ route('campus.dashboard') }}" class="menu-link">
-              <div data-i18n="Campus Mission">Campus Mission</div>
-            </a>
-          </li>
-          <li class="menu-item">
-            <a href="{{ route('bible.dashboard') }}" class="menu-link">
-              <div data-i18n="Bible Studies">Bible Studies</div>
-            </a>
-          </li>
-        </ul>
-      </li>
-    @else
-      <li class="menu-item {{ ($route == 'dashboard')?'active':'' }}">
-        <a href="{{ route('dashboard') }}" class="menu-link">
-          <i class="menu-icon fa-solid fa-house"></i>
-          <div data-i18n="Analytics">Dashboard</div>
-        </a>
-      </li>
-    @endif
-
-        <li class="menu-item {{ ($route == 'courses.index' || $prefix == '/lessons' )?'active':'' }}">
-          <a href="{{ route('courses.index') }}" class="menu-link">
-            <i class="fa-brands fa-youtube menu-icon"></i>
-            <div data-i18n="Layouts">Courses</div>
+      @if(auth()->user()->role === 'admin')
+        <li class="menu-item {{ ($route == 'bible.dashboard')?'active':'' }}">
+          <a href="{{ route('dashboard') }}" class="menu-link menu-toggle">
+            <i class="menu-icon fa-solid fa-house"></i>
+            <div data-i18n="Dashboards">Dashboards</div>
           </a>
+          <ul class="menu-sub">
+            <li class="menu-item">
+              <a href="{{ route('dashboard') }}" class="menu-link">
+                <div data-i18n="CRM">Mission Institute</div>
+              </a>
+            </li>
+            <li class="menu-item">
+              <a href="{{ route('campus.dashboard') }}" class="menu-link">
+                <div data-i18n="Analytics">Campus Mission</div>
+              </a>
+            </li>
+            <li class="menu-item {{ ($route == 'bible.dashboard')?'active':'' }}">
+              <a href="{{ route('bible.dashboard') }}" class="menu-link">
+                <div data-i18n="eCommerce">Bible Studies</div>
+              </a>
+            </li>
+          </ul>
         </li>
-
-        <li class="menu-item {{ ($route == 'resources.index')?'active':'' }}">
-          <a href="{{ route('resources.index') }}" class="menu-link">
-            <i class="fa-solid fa-book menu-icon"></i>
-            <div data-i18n="Layouts">Resources</div>
-          </a>
-        </li>
-
-      @if(auth()->check() && auth()->user()->role === 'user' || auth()->user()->role === 'tutor' )
-        <li class="menu-item {{ ($route == 'quiz.index' || $route == 'submit-quiz')?'active':'' }}">
-          <a href="{{ route('quiz.index') }}" class="menu-link">
-            <i class="fa-solid fa-circle-question menu-icon"></i>
-            <div data-i18n="Layouts">Quiz</div>
+      @else
+        <li class="menu-item {{ ($route == 'bible.dashboard')?'active':'' }}">
+          <a href="{{ route('bible.dashboard') }}" class="menu-link">
+            <i class="menu-icon fa-solid fa-house"></i>
+            <div data-i18n="Analytics">Dashboard</div>
           </a>
         </li>
       @endif
 
-      @if(auth()->check() && auth()->user()->role !== 'admin' && auth()->user()->role !== 'tutor')
-        <li class="menu-item {{ ($route == 'certificates.index')?'active':'' }}">
-          <a href="{{ route('certificates.index') }}" class="menu-link">
+      <li class="menu-item {{ ($route == 'bs.lessons.index')?'active':'' }}">
+        <a href="{{ route('bs.lessons.index') }}" class="menu-link">
+          <i class="fa-solid fa-book menu-icon"></i>
+          <div data-i18n="Layouts">Lessons</div>
+        </a>
+      </li>
+
+      @php
+        use App\Models\bsLesson;
+        use App\Models\bsStudentProgress;
+        use Illuminate\Support\Facades\Auth;
+
+        $user = Auth::user();
+
+        if ($user) {
+            $totalLessonsCount = bsLesson::count();
+
+            $completedLessonsCount = bsStudentProgress::where('user_id', $user->id)
+                                                    ->where('is_completed', true)
+                                                    ->count();
+
+            $hasCompletedAllLessons = $completedLessonsCount === $totalLessonsCount;
+        }
+      @endphp
+      @if(auth()->check() && auth()->user()->role === 'user' && $hasCompletedAllLessons)
+        <li class="menu-item {{ ($route == 'bs.certificate.show')?'active':'' }}">
+          <a href="{{ route('bs.certificate.show', ['userId' => $user->id, 'bsLessonId' => $lesson->id]) }}" class="menu-link">
             <i class="fa-solid fa-certificate menu-icon"></i>
             <div data-i18n="Layouts">Certificates</div>
           </a>
@@ -140,29 +141,29 @@
       @endif
 
       @if(auth()->check() && auth()->user()->role === 'admin')
-        <li class="menu-item {{ ($route == 'users.index')?'active':'' }}">
-          <a href="{{ route('users.index') }}" class="menu-link">
+        <li class="menu-item {{ ($route == 'bs.users')?'active':'' }}">
+          <a href="{{ route('bs.users') }}" class="menu-link">
             <i class="fa-solid fa-user menu-icon"></i>
-            <div data-i18n="Layouts">Users</div>
+            <div data-i18n="Layouts">Students</div>
           </a>
         </li>
       @endif
 
-      <li class="menu-item {{ ($route == 'profile.index')?'active':'' }}">
-        <a href="{{ route('profile.index') }}" class="menu-link">
+      <li class="menu-item {{ ($route == 'bs.profile')?'active':'' }}">
+        <a href="{{ route('bs.profile') }}" class="menu-link">
           <i class="fa-solid fa-id-badge menu-icon"></i>
           <div data-i18n="Layouts">Profile</div>
         </a>
       </li>
 
       <li class="menu-item">
-        <a href="{{ route('logout') }}" class="menu-link" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
+        <a href="{{ route('bible.logout') }}" class="menu-link" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
           <i class="fa-solid fa-right-from-bracket menu-icon"></i>
           <div data-i18n="Layouts">Logout</div>
         </a>
       </li>
 
-      <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+      <form id="logout-form" action="{{ route('bible.logout') }}" method="POST" style="display: none;">
         @csrf
       </form>
     </ul>

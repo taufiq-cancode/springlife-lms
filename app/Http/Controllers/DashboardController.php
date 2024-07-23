@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\bsLesson;
+use App\Models\bsStudentProgress;
 use App\Models\Report;
 use App\Models\ChapterReport;
 use App\Models\MissionReport;
@@ -48,7 +50,35 @@ class DashboardController extends Controller
         }        
     }
 
-    public function campusDashboard(){
+    public function instituteDashboard(){
+        try {
+            $user = auth()->user();
+
+            $courses = [];
+
+            if ($user->role === 'admin') {
+                $courses = Course::orderBy('created_at', 'desc')->get();
+            } elseif ($user->role === 'tutor') {
+                $courses = $user->tutoredCourses()->orderBy('created_at', 'desc')->get();
+            } else {
+                $courses = Course::orderBy('created_at', 'desc')->get();
+            }
+            
+            $totalLessons = Lesson::count();
+            $totalCourses = $courses->count();
+    
+            $user = Auth::user();
+            $completedLessons = $user->lessons()->wherePivot('completed', true)->count();
+            
+            return view('institute-dashboard', compact('courses', 'totalLessons', 'completedLessons', 'totalCourses'));
+        } catch (\Exception $e) {
+            Log::error('Error while accessing dashboard: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error accessing dashboard');
+        }        
+    }
+
+    public function campusDashboard()
+    {
         try {
             $user = auth()->user();
             $userRole = $user->role;
@@ -128,5 +158,21 @@ class DashboardController extends Controller
             return redirect()->back()->with('error', 'Error accessing dashboard');
         }        
     }
-    
+
+    public function bibleDashboard()
+    {
+        $userId = auth()->user()->id;
+        $lessons = bsLesson::all();
+        $totalLessons = bsLesson::count();
+        $totalStudents = User::where('role', 'user')->count();
+        $completedLessons = bsStudentProgress::where('user_id', $userId)
+                                                ->where('is_completed', true)
+                                                ->pluck('bs_lesson_id')
+                                                ->toArray();
+        $completedLessonsCount = bsStudentProgress::where('user_id', $userId)
+                                                    ->where('is_completed', true)
+                                                    ->count();
+
+        return view('bible-dashboard', compact('totalLessons', 'totalStudents', 'completedLessons', 'lessons', 'completedLessonsCount'));
+    }    
 }

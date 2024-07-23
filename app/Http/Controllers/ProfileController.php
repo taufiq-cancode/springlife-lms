@@ -15,9 +15,23 @@ class ProfileController extends Controller
 {
     public function index(){
         try{
-            
             return view('profile.index');
+        }catch (\Exception $e){
+            return redirect()->back()->with('error', 'Error while retrieving profile');
+        }        
+    }
 
+    public function bsIndex(){
+        try{
+            return view('bs.profile');
+        }catch (\Exception $e){
+            return redirect()->back()->with('error', 'Error while retrieving profile');
+        }        
+    }
+
+    public function cmIndex(){
+        try{
+            return view('cm-profile');
         }catch (\Exception $e){
             return redirect()->back()->with('error', 'Error while retrieving profile');
         }        
@@ -25,7 +39,6 @@ class ProfileController extends Controller
 
     public function update(Request $request){
         try{
-            
             $validatedData = $request->validate([
                 'firstname' => 'required|string|max:255',
                 'lastname' => 'required|string|max:255',
@@ -50,7 +63,6 @@ class ProfileController extends Controller
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
-
     public function destroy(Request $request): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [

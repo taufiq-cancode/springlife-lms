@@ -72,4 +72,14 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Course::class, 'course_tutors', 'tutor_id', 'course_id');
     }
+
+    public function progress()
+    {
+        return $this->hasMany(bsStudentProgress::class);
+    }
+
+    public function bsLesson()
+    {
+        return $this->belongsTo(bsLesson::class, 'bs_lesson_id');
+    }
 }
