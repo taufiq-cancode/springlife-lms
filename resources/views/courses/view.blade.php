@@ -19,7 +19,10 @@
             @if(auth()->check() && (auth()->user()->role === 'admin' || $course->tutors->contains(auth()->user())))
                 <div>
                     <button type="button" class="btn btn-outline-primary mt-3 mb-4" data-bs-toggle="modal" data-bs-target="#modalEdit">Edit Course</button>
-                    <button type="button" class="btn btn-outline-primary mt-3 mb-4" data-bs-toggle="modal" data-bs-target="#modalCenter">Add Lesson</button>
+
+                    @if(auth()->check() && (auth()->user()->role === 'tutor' || $course->tutors->contains(auth()->user())))
+                        <button type="button" class="btn btn-outline-primary mt-3 mb-4" data-bs-toggle="modal" data-bs-target="#modalCenter">Add Lesson</button>
+                    @endif
                 </div>
             @endif
         </div>
