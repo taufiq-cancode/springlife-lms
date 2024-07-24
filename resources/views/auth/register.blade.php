@@ -119,6 +119,11 @@
                 </div>
 
                 <div class="mb-3">
+                  <label for="email" class="form-label">Phone (include country code e.g +234)</label>
+                  <input type="text" class="form-control" id="phone" name="phone" placeholder="Enter your phone number" required/>
+                </div>
+
+                <div class="mb-3">
                     <label for="defaultSelect" class="form-label">Gender</label>
                     <select id="defaultSelect" class="form-select" name="gender" required>
                       <option>Select Gender</option>
