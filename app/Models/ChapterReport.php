@@ -11,6 +11,7 @@ class ChapterReport extends Model
 
     protected $fillable = [
         'user_id',
+        'chapter_id',
         'name_of_your_institution',
         'date_of_the_report',
         'number_of_students_in_your_chapter',
@@ -32,4 +33,9 @@ class ChapterReport extends Model
         'program3',
         'is_your_chapter_facing_any_challenge_in_the_mission_field',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

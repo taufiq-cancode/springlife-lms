@@ -101,7 +101,7 @@
                                                                         
                                                                         <div class="modal-body">
                                                     
-                                                                            <form method="POST" action="{{ route('lessons.update', ['lessonId' => $lesson]) }}" enctype="multipart/form-data">
+                                                                            <form method="POST" action="{{ route('bs.lessons.update', ['bsLessonId' => $lesson->id]) }}" enctype="multipart/form-data">
                                                                                 @csrf
                                                                                 @method('PUT')
                                                             
@@ -114,17 +114,31 @@
                                                     
                                                                                 <div class="row">
                                                                                     <div class="col mb-3">
-                                                                                        <label for="nameWithTitle" class="form-label">Lesson link</label>
-                                                                                        <input type="text" id="lessonLink" name="link" value="{{ $lesson->link }}" class="form-control" placeholder="Enter Lesson Link">
-                                                                                    </div>
-                                                                                </div>
-                                                    
-                                                                                <div class="row">
+                                                                                        <label for="nameWithTitle" class="form-label">Lesson Description</label>
+                                                                                        <textarea class="form-control" name="description" value="{{ $lesson->description }}" id="exampleFormControlTextarea1" rows="3"></textarea>
+                                                                                      </div>
+                                                                                  </div>
+                                                                  
+                                                                                  <div class="row">
                                                                                     <div class="col mb-3">
-                                                                                        <label for="nameWithTitle" class="form-label">Lesson Duration</label>
-                                                                                        <input type="text" id="lessonDuration" name="duration" value="{{ $lesson->duration }}" class="form-control" placeholder="Enter Lesson Duration">
+                                                                                        <label for="nameWithTitle" class="form-label">Lesson PDF</label>
+                                                                                        <input class="form-control" type="file" name="pdfs[]" multiple>
+                                                                                      </div>
+                                                                                  </div>
+                                                                  
+                                                                                  <div class="row">
+                                                                                    <div class="col mb-3">
+                                                                                        <label for="nameWithTitle" class="form-label">Lesson Video Link</label>
+                                                                                        <input type="text" id="nameWithTitle" name="video_link" value="{{ $lesson->video_link }}" class="form-control" placeholder="Enter Lesson Youtube Link">
                                                                                     </div>
-                                                                                </div>
+                                                                                  </div>
+                                                          
+                                                                                  <div class="row">
+                                                                                      <div class="col mb-3">
+                                                                                          <label for="lesson_link" class="form-label">Lesson Video Duration</label>
+                                                                                          <input type="number" name="duration" class="form-control" value="{{ $lesson->duration }}" placeholder="Enter Video Duration">
+                                                                                      </div>
+                                                                                  </div>
                                                             
                                                                                 <div class="modal-footer">
                                                                                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
@@ -138,7 +152,7 @@
                                                             </div>
                                                         </div>
                                                         <div>
-                                                            <form method="POST" action="{{ route('lessons.delete', ['lessonId' => $lesson->id]) }}" class="d-inline">
+                                                            <form method="POST" action="{{ route('bs.lessons.delete', ['bsLessonId' => $lesson->id]) }}" class="d-inline">
                                                                 @csrf
                                                                 @method('DELETE')
                                                             

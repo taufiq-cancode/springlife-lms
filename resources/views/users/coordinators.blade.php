@@ -146,7 +146,7 @@
                                         <tr>
                                             <th>Name</th>
                                             <th>Email</th>
-                                            <th>Role</th>
+                                            <th>Chapter</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -159,8 +159,8 @@
                                                     <span class="fw-medium">{{ $coordinator->firstname }} {{ $coordinator->lastname }}</span>
                                                 </td>
                                                 <td>{{ $coordinator->email }}</td>
-                                                <td>{{ Illuminate\Support\Str::title(str_replace('_', ' ', $coordinator->role)) }}
-                                                    <td>
+                                                <td>{{ $coordinator->chapter ? $coordinator->chapter->name : 'No Chapter Assigned' }}</td>
+                                                <td>
                                                     <span class="badge bg-label-{{ $coordinator->status == 1 ? 'primary' : 'danger' }} me-1">
                                                         {{ $coordinator->status == 1 ? 'Active' : 'Inactive' }}
                                                     </span>
@@ -240,7 +240,7 @@
                                         <tr>
                                             <th>Name</th>
                                             <th>Email</th>
-                                            <th>Role</th>
+                                            <th>Zone</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -253,8 +253,8 @@
                                                     <span class="fw-medium">{{ $coordinator->firstname }} {{ $coordinator->lastname }}</span>
                                                 </td>
                                                 <td>{{ $coordinator->email }}</td>
-                                                <td>{{ Illuminate\Support\Str::title(str_replace('_', ' ', $coordinator->role)) }}
-                                                    <td>
+                                                <td>{{ $coordinator->zone ? $coordinator->zone->name : 'No Chapter Assigned' }}</td>
+                                                <td>
                                                     <span class="badge bg-label-{{ $coordinator->status == 1 ? 'primary' : 'danger' }} me-1">
                                                         {{ $coordinator->status == 1 ? 'Active' : 'Inactive' }}
                                                     </span>
@@ -334,7 +334,7 @@
                                         <tr>
                                             <th>Name</th>
                                             <th>Email</th>
-                                            <th>Role</th>
+                                            <th>Region</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
@@ -347,7 +347,7 @@
                                                     <span class="fw-medium">{{ $coordinator->firstname }} {{ $coordinator->lastname }}</span>
                                                 </td>
                                                 <td>{{ $coordinator->email }}</td>
-                                                <td>{{ Illuminate\Support\Str::title(str_replace('_', ' ', $coordinator->role)) }}</td>
+                                                <td>{{ $coordinator->region }}</td>
                                                 <td>
                                                     <span class="badge bg-label-{{ $coordinator->status == 1 ? 'primary' : 'danger' }} me-1">
                                                         {{ $coordinator->status == 1 ? 'Active' : 'Inactive' }}
@@ -534,71 +534,126 @@
 
     
     @if(auth()->check() && auth()->user()->role === 'admin')
-      <div class="modal fade" id="modalTutor" tabindex="-1" style="display: none;" aria-hidden="true">
+    <div class="modal fade" id="modalTutor" tabindex="-1" style="display: none;" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="modalCenterTitle">Add a Coordinator</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form method="POST" action="{{ route('coordinator.store') }}" enctype="multipart/form-data">
-              @csrf
-          
-              <div class="modal-body">
-                  <div class="row">
-                      <div class="col-6 mb-3">
-                          <label for="firstname" class="form-label">Firstname</label>
-                          <input type="text" id="firstname" name="firstname" class="form-control" required placeholder="Enter firstname">
-                      </div>
-                      <div class="col-6 mb-3">
-                          <label for="lastname" class="form-label">Lastname</label>
-                          <input type="text" id="lastname" name="lastname" class="form-control" required placeholder="Enter lastname">
-                      </div>
-                  </div>
-          
-                  <div class="row">
-                      <div class="col mb-3">
-                          <label for="email" class="form-label">Email Address</label>
-                          <input type="text" id="email" name="email" class="form-control" required placeholder="Enter email address">
-                      </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col mb-3">
-                        <label for="email" class="form-label">Gender</label>
-                        <select id="defaultSelect" class="form-select" name="gender" required>
-                          <option>Select Gender</option>
-                          <option value="male">Male</option>
-                          <option value="female">Female</option>
-                        </select>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCenterTitle">Add a Coordinator</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" action="{{ route('coordinator.store') }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label for="firstname" class="form-label">Firstname</label>
+                                <input type="text" id="firstname" name="firstname" class="form-control" required placeholder="Enter firstname">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label for="lastname" class="form-label">Lastname</label>
+                                <input type="text" id="lastname" name="lastname" class="form-control" required placeholder="Enter lastname">
+                            </div>
+                        </div>
+    
+                        <div class="row">
+                            <div class="col mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="text" id="email" name="email" class="form-control" required placeholder="Enter email address">
+                            </div>
+                        </div>
+    
+                        <div class="row">
+                            <div class="col mb-3">
+                                <label for="gender" class="form-label">Gender</label>
+                                <select id="defaultSelect" class="form-select" name="gender" required>
+                                    <option>Select Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
+                        </div>
+    
+                        <div class="row">
+                            <div class="col mb-3">
+                                <label for="role" class="form-label">Role</label>
+                                <select id="role" name="role" class="form-select" onchange="handleRoleChange()">
+                                    <option value="">Select role</option>
+                                    <option value="chapter_coordinator">Chapter Coordinator</option>
+                                    <option value="zonal_coordinator">Zonal Coordinator</option>
+                                    <option value="regional_coordinator">Regional Coordinator</option>
+                                    <option value="national_coordinator">National Coordinator</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col mb-3" id="chapterSelect" style="display: none;">
+                                <label for="chapter_id" class="form-label">Chapter</label>
+                                <select id="chapter_id" name="chapter_id" class="form-select">
+                                    <option value="">Select Chapter</option>
+                                    @foreach($chapters as $chapter)
+                                        <option value="{{ $chapter->id }}">{{ $chapter->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        
+                            <div class="col mb-3" id="zoneSelect" style="display: none;">
+                                <label for="zone_id" class="form-label">Zone</label>
+                                <select id="zone_id" name="zone_id" class="form-select">
+                                    <option value="">Select Zone</option>
+                                    @foreach($zones as $zone)
+                                        <option value="{{ $zone->id }}">{{ $zone->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        
+                            <div class="col mb-3" id="regionSelect" style="display: none;">
+                                <label for="region" class="form-label">Region</label>
+                                <select id="region" name="region" class="form-select">
+                                    <option value="">Select Region</option>
+                                    <option value="Western">Western</option>
+                                    <option value="Eastern">Eastern</option>
+                                    <option value="Southern">Southern</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <script>
+                        function handleRoleChange() {
+                            var role = document.getElementById('role').value;
+                            var chapterSelect = document.getElementById('chapterSelect');
+                            var zoneSelect = document.getElementById('zoneSelect');
+                            var regionSelect = document.getElementById('regionSelect');
+                        
+                            // Hide all select fields initially
+                            chapterSelect.style.display = 'none';
+                            zoneSelect.style.display = 'none';
+                            regionSelect.style.display = 'none';
+                        
+                            // Show specific fields based on the selected role
+                            if (role === 'chapter_coordinator') {
+                                chapterSelect.style.display = 'block';
+                                zoneSelect.style.display = 'block';
+                            } else if (role === 'zonal_coordinator') {
+                                zoneSelect.style.display = 'block';
+                                regionSelect.style.display = 'block';
+                            } else if (role === 'regional_coordinator') {
+                                regionSelect.style.display = 'block';
+                            }
+                        }
+                        </script>
+                        
                     </div>
-                  </div>
-          
-                  <div class="row">
-                      <div class="col mb-3">
-                          <label for="role" class="form-label">Role</label>
-                          <select id="role" name="role" class="form-select">
-                            <option value="">Select role</option>
-                            <option value="chapter_coordinator">Chapter Coordinator</option>
-                            <option value="zonal_coordinator">Zonal Coordinator</option>
-                            <option value="regional_coordinator">Regional Coordinator</option>
-                            <option value="national_coordinator">National Coordinator</option>
-                          </select>
-                      </div>
-                  </div>
-              </div>
-          
-              <div class="modal-footer">
-                  <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-                  <button type="submit" class="btn btn-primary">Submit</button>
-              </div>
-          
-          </form>
-          
-          </div>
+    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
         </div>
-      </div>
-
+    </div>
+    
       <div class="modal fade" id="modalAdmin" tabindex="-1" style="display: none;" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
@@ -654,5 +709,5 @@
 
     <div class="content-backdrop fade"></div>
     </div>
-          
+       
 @endsection

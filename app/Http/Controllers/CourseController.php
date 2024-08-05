@@ -135,10 +135,8 @@ class CourseController extends Controller
 
 
         }catch(\Exception $e){
-
             Log::error('Error while getting embeddings: '. $e->getMessage());
             return redirect()->back()->with('error', $e->getMessage());
-
         }
     }
     public function view($courseId){

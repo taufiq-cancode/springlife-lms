@@ -15,6 +15,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\bsLessonController;
 use App\Http\Controllers\bsQuizController;
+use App\Http\Controllers\ChapterZonesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -50,6 +51,13 @@ Route::get('/certificate', function () {
 
 // Route::get('/bible-studies/login', [AuthController::class, 'showLoginForm'])->name('bible-studies.login');
 // Route::post('/bible-studies/login', [AuthController::class, 'login']);
+
+Route::get('/register/student-coordinator', [UsersController::class, 'createStudentCoordinator']) ->name('create.student_coordinator');
+Route::get('/register/chapter-coordinator', [UsersController::class, 'createChapterCoordinator']) ->name('create.chapter_coordinator');
+
+Route::post('/store/student-coordinator', [UsersController::class, 'storeStudentCoordinator']) ->name('register.student_coordinator');
+Route::post('/store/chapter-coordinator', [UsersController::class, 'storeChapterCoordinator']) ->name('register.chapter_coordinator');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']) ->name('dashboard');
@@ -160,6 +168,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'bsIndex'])->name('bs.profile');
         Route::get('/students', [UsersController::class, 'bsIndex'])->name('bs.users');
         Route::post('/store/lessons', [bsLessonController::class, 'store'])->name('bs.lessons.store');
+        Route::put('/update/{bsLessonId}', [bsLessonController::class, 'update']) ->name('bs.lessons.update');
+        Route::delete('/delete/{bsLessonId}', [bsLessonController::class, 'delete']) ->name('bs.lessons.delete');
         Route::get('/certificate/{userId}', [CertificateController::class, 'bsShowCertificate'])->name('bs.certificate.show');
 
         Route::prefix('quiz')->group(function(){
@@ -170,6 +180,16 @@ Route::middleware('auth')->group(function () {
             Route::delete('/delete/question/{questionId}', [bsQuizController::class, 'deleteQuestion']) ->name('bs.quiz.question.delete');
         }); 
     });
+
+    Route::get('chapter-zones', [ChapterZonesController::class, 'index'])->name('chapterzones.index');
+
+    Route::post('chapter', [ChapterZonesController::class, 'storeChapter'])->name('chapter.store');
+    Route::put('chapter/{chapterId}', [ChapterZonesController::class, 'updateChapter'])->name('chapter.update');
+    Route::delete('chapter', [ChapterZonesController::class, 'destroyChapter'])->name('chapter.delete');
+
+    Route::post('zone', [ChapterZonesController::class, 'storeZone'])->name('zone.store');
+    Route::put('zone/{zoneId}', [ChapterZonesController::class, 'updateZone'])->name('zone.update');
+    Route::delete('zone', [ChapterZonesController::class, 'destroyZone'])->name('zone.delete');
 
     Route::get('campus-mission/profile', [ProfileController::class, 'cmIndex'])->name('cm.profile');
 });

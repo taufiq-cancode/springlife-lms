@@ -44,7 +44,7 @@
                                     <div class="row">
                                         <div class="col mb-3">
                                             <label for="chapter_name" class="form-label">Name of your Chapter</label>
-                                            <input type="text" id="chapter_name" name="chapter_name" class="form-control" required placeholder="Enter your chapter name">
+                                            <input type="text" id="chapter_name" value="{{ auth()->user()->chapter->name }}" class="form-control" disabled placeholder="Enter your chapter name">
                                         </div>
                                     </div>
                                 
@@ -399,7 +399,7 @@
                                     <div class="row">
                                         <div class="col mb-3">
                                             <label for="name_of_your_zone" class="form-label">Name of your Zone</label>
-                                            <input type="text" id="name_of_your_zone" name="name_of_your_zone" class="form-control" required placeholder="Enter Zone Name">
+                                            <input type="text" id="name_of_your_zone" value="{{ auth()->user()->zone->name }}" class="form-control" disabled>
                                         </div>
                                     </div>
                                     

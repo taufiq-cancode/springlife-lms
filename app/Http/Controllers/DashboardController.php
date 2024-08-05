@@ -107,8 +107,15 @@ class DashboardController extends Controller
                 $userReports = null;
             }
 
+            if(auth()->user()->role === "chapter_coordinator"){
+                $studentReports = StudentReport::where('chapter_name', auth()->user()->chapter->name)
+                                            ->orderBy('created_at', 'desc')
+                                            ->get();
+            }else{
+                $studentReports = StudentReport::all();
+            }
+
             $chapterReports = ChapterReport::all();
-            $studentReports = StudentReport::all();
             $zonalReports = ZonalReport::all();
             $regionalReports = RegionalReport::all();
             $missionReports = MissionReport::all();

@@ -131,9 +131,9 @@
             $hasCompletedAllLessons = $completedLessonsCount === $totalLessonsCount;
         }
       @endphp
-      @if(auth()->check() && auth()->user()->role === 'user' && $hasCompletedAllLessons)
+      @if(auth()->check() && auth()->user()->role !== 'admin' && $hasCompletedAllLessons)
         <li class="menu-item {{ ($route == 'bs.certificate.show')?'active':'' }}">
-          <a href="{{ route('bs.certificate.show', ['userId' => $user->id, 'bsLessonId' => $lesson->id]) }}" class="menu-link">
+          <a href="{{ route('bs.certificate.show', ['userId' => $user->id]) }}" class="menu-link">
             <i class="fa-solid fa-certificate menu-icon"></i>
             <div data-i18n="Layouts">Certificates</div>
           </a>

@@ -22,6 +22,8 @@ class ReportController extends Controller
         $user = auth()->user();
         $userRole = $user->role;
 
+        $userCSR = $user>with('chapter');
+
         if ($userRole === 'chapter_coordinator') {
             $userReports = ChapterReport::where('user_id', $user->id)
                                         ->orderBy('created_at', 'desc')
@@ -46,7 +48,24 @@ class ReportController extends Controller
             $userReports = null;
         }
 
-        $studentReports = StudentReport::all();
+        if(auth()->user()->role === "chapter_coordinator"){
+            $studentReports = StudentReport::where('chapter_name', auth()->user()->chapter->name)
+                                        ->orderBy('created_at', 'desc')
+                                        ->get();
+        }else{
+            $studentReports = StudentReport::all();
+        }
+
+        if (auth()->user()->role === 'zonal_coordinator') {
+            $zoneId = auth()->user()->zone_id; // Get the zone_id of the logged-in zonal coordinator
+            $chapterReports = ChapterReport::whereHas('user', function ($query) use ($zoneId) {
+                $query->where('zone_id', $zoneId);
+            })->orderBy('created_at', 'desc')->get();
+        } else {
+            $chapterReports = ChapterReport::all();
+        }
+        
+
         $chapterReports = ChapterReport::all();
         $zonalReports = ZonalReport::all();
         $regionalReports = RegionalReport::all();
@@ -81,8 +100,6 @@ class ReportController extends Controller
     {
         try{
             $validatedData = $request->validate([
-                
-                'chapter_name' => 'required|string|max:255',
                 'zone_or_conference_name' => 'required|string|max:255',
                 'year_level' => 'required|string|in:100 level,200 level,300 level,400 level',
                 'phone_number' => 'required|string|max:15',
@@ -92,6 +109,7 @@ class ReportController extends Controller
                 'bible_study_completed_date' => 'nullable|date|required_if:christ_our_saviour_bible_study_completed,1',
             ]);
 
+            $validatedData['chapter_name'] = auth()->user()->chapter->name;
             $validatedData['full_name'] = auth()->user()->firstname .' '.auth()->user()->lastname;
             $validatedData['email'] = auth()->user()->email;
             $validatedData['user_id'] = auth()->user()->id;
@@ -184,7 +202,6 @@ class ReportController extends Controller
             Log::info('Request received.');
 
             $validatedData = $request->validate([
-                'name_of_your_zone' => 'required|string|max:255',
                 'date_of_the_report' => 'required|date',
                 'number_of_chapters_in_your_zone' => 'nullable|integer',
                 'number_of_missional_chapters_in_your_zone' => 'nullable|integer',
@@ -230,10 +247,10 @@ class ReportController extends Controller
 
             $userId = Auth::id();
             $validatedData['user_id'] = $userId;
+            $validatedData['name_of_your_zone'] = auth()->user()->zone->name;
             Log::info('User ID attached.', ['user_id' => $userId]);
 
             ZonalReport::create($validatedData);
-            Log::info('ZonalReport created.', $validatedData);
 
             return redirect()->route('reports.index')->with('success', 'Report submitted successfully.');
         } catch (ValidationException $e) {

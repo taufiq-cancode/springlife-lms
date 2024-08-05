@@ -27,6 +27,9 @@ class User extends Authenticatable
         'role',
         'status',
         'password',
+        'chapter_id',
+        'zone_id',
+        'region',
     ];
 
     /**
@@ -81,5 +84,25 @@ class User extends Authenticatable
     public function bsLesson()
     {
         return $this->belongsTo(bsLesson::class, 'bs_lesson_id');
+    }
+
+    public function chapterReports()
+    {
+        return $this->hasMany(ChapterReport::class);
+    }
+
+    public function zonalReports()
+    {
+        return $this->hasMany(ZonalReport::class);
+    }
+
+    public function chapter()
+    {
+        return $this->belongsTo(Chapter::class);
+    }
+
+    public function zone()
+    {
+        return $this->belongsTo(Zone::class);
     }
 }

@@ -123,6 +123,13 @@
             <div data-i18n="Layouts">Coordinators</div>
           </a>
         </li>
+
+        <li class="menu-item {{ ($route == 'chapterzones.index')?'active':'' }}">
+          <a href="{{ route('chapterzones.index') }}" class="menu-link">
+            <i class="fa-solid fa-location-dot menu-icon"></i>
+            <div data-i18n="Layouts">Chapters & Zones</div>
+          </a>
+        </li>
       @endif
 
       <li class="menu-item {{ ($route == 'cm.profile')?'active':'' }}">

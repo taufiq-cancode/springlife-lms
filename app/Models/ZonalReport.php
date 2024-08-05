@@ -11,6 +11,7 @@ class ZonalReport extends Model
 
     protected $fillable = [
         'user_id',
+        'zone_id',
         'name_of_your_zone',
         'date_of_the_report',
         'number_of_chapters_in_your_zone',
@@ -34,4 +35,19 @@ class ZonalReport extends Model
         'program3',
         'is_any_chapter_facing_any_challenge_in_the_mission_field'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function chapter()
+    {
+        return $this->belongsTo(Chapter::class);
+    }
+
+    public function zone()
+    {
+        return $this->belongsTo(Zone::class);
+    }
 }

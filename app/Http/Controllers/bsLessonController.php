@@ -76,6 +76,7 @@ class bsLessonController extends Controller
             return redirect()->back()->with('error', 'Error while adding lesson');
         }
     }
+    
 
     private function extractVideoId($url){
         $pattern = '/(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/';
@@ -99,7 +100,7 @@ class bsLessonController extends Controller
         try {
             $request->validate([
                 'title' => 'required|string|max:255',
-                'description' => 'required|string|max:255',
+                'description' => 'nullable|string|max:255',
                 'video_link' => 'nullable|string',
                 'duration' => 'nullable|integer',
                 'pdfs.*' => 'file|mimes:pdf|max:2048',
@@ -121,7 +122,7 @@ class bsLessonController extends Controller
                 foreach ($request->file('pdfs') as $pdf) {
                     $path = $pdf->store('bs_pdfs', 'public');
 
-                    $lesson->pdfs()->create([
+                    $lesson->bsPdfs()->create([
                         'file_path' => $path
                     ]);
                 }

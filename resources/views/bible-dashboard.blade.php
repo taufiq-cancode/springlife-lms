@@ -193,7 +193,7 @@
                                                                             
                                                                             <div class="modal-body">
                                                         
-                                                                                <form method="POST" action="{{ route('lessons.update', ['lessonId' => $lesson]) }}" enctype="multipart/form-data">
+                                                                                <form method="POST" action="{{ route('bs.lessons.update', ['bsLessonId' => $lesson]) }}" enctype="multipart/form-data">
                                                                                     @csrf
                                                                                     @method('PUT')
                                                                 

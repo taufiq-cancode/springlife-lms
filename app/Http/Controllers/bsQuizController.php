@@ -38,7 +38,7 @@ class bsQuizController extends Controller
         $answers = $request->input('answers');
         $totalQuestions = count($answers);
         $score = 0;
-
+    
         foreach ($answers as $answer) {
             $answer = json_decode($answer, true);
             $question = bsQuestion::find($answer['question_id']);
@@ -46,19 +46,27 @@ class bsQuizController extends Controller
                 $score++;
             }
         }
-
+    
         $percentage = ($score / $totalQuestions) * 100;
         $status = $percentage >= 100 ? 'success' : 'error';
-
-        if($percentage == 100){
-            bsStudentProgress::create([
-                'user_id' => Auth::id(),
-                'bs_lesson_id' => $lessonId,
-                'is_completed' => true
-            ]);
+    
+        if ($percentage == 100) {
+            $existingProgress = bsStudentProgress::where('user_id', Auth::id())
+                ->where('bs_lesson_id', $lessonId)
+                ->first();
+    
+            if (!$existingProgress) {
+                bsStudentProgress::create([
+                    'user_id' => Auth::id(),
+                    'bs_lesson_id' => $lessonId,
+                    'is_completed' => true
+                ]);
+            }
         }
+    
         return view('bs.quiz.quiz-result', compact('percentage', 'status'));
     }
+    
 
     public function storeQuestion(Request $request, $bsLessonId)
     {
